@@ -1,12 +1,17 @@
 import {
-  Calendar,
   Home,
-  Inbox,
   Search,
   Settings,
   User2,
   ChevronUp,
+  ListOrdered,
+  LayoutGrid,
+  Book,
 } from "lucide-react";
+
+import logo from "@public/logo-color.png"
+
+import { useLocation } from "react-router-dom";
 
 import {
   Sidebar,
@@ -29,86 +34,90 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Página Inicial",
+    url: "/",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
+    title: "Pesquisar",
+    url: "/search",
     icon: Search,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Seções",
+    url: "/sections",
+    icon: ListOrdered,
+  },
+  {
+    title: "Categorias",
+    url: "/categories",
+    icon: LayoutGrid,
+  },
+  {
+    title: "Treinamentos",
+    url: "/trainings",
+    icon: Book,
   },
 ];
-
 export function AppSidebar() {
+  const location = useLocation();
+
   return (
     <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <div className="flex items-center justify-center h-16">
-            <img src="/path-to-logo.png" alt="Logo" className="h-full" />
-          </div>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-300 focus:text-gray-900"
-                  >
-                    <a href={item.url} className="flex items-center gap-2">
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <SidebarContent className="bg-stone-100 flex flex-col-reverse md:flex-col">
+        {/* Footer com os ícones no modo responsivo */}
+        <SidebarFooter className="md:hidden flex justify-around bg-gray-200 p-2">
+          {items.map((item) => (
+            <a
+              key={item.title}
+              href={item.url}
+              className={`flex flex-col items-center gap-1 text-sm ${
+                location.pathname === item.url
+                  ? "text-gray-800"
+                  : "text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              <item.icon className="w-6 h-6" />
+              <span>{item.title}</span>
+            </a>
+          ))}
+        </SidebarFooter>
 
-      {/* Dropdown Menu in Sidebar Footer */}
-      <SidebarFooter>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="cursor-pointer flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-300 focus:text-gray-900">
-              <User2 /> Username
-              <ChevronUp className="ml-auto cursor-pointer" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="top"
-            className="w-[--radix-popper-anchor-width]"
-          >
-            <DropdownMenuItem>
-              <span>Account</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Billing</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Sign out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarFooter>
+        {/* Conteúdo principal da Sidebar (visível em telas maiores) */}
+        <div className="hidden md:block">
+          <SidebarGroup>
+            <div className="flex items-center justify-center h-16">
+              <img
+                src="./logo-color-three.png"
+                alt="Logo"
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={`flex items-center gap-2 p-2 rounded-md transition-colors ${
+                        location.pathname === item.url
+                          ? "bg-gray-500 text-white hover:bg-gray-700 hover:text-white"
+                          : "hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-300 focus:text-gray-900"
+                      }`}
+                    >
+                      <a href={item.url} className="flex items-center gap-2">
+                        <item.icon className="w-5 h-5" />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </div>
+      </SidebarContent>
     </Sidebar>
   );
 }

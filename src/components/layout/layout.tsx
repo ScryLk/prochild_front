@@ -1,42 +1,30 @@
-import React from "react"
-import { SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/sidebar/app-sidebar"
-import AppHeader from "../header/app-header"
+import React from "react";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 
 interface LayoutProps {
-  header?: React.ReactNode
-  sidebar?: React.ReactNode
-  footer?: React.ReactNode
-  children: React.ReactNode // Conteúdo principal
+  header?: React.ReactNode;
+  sidebar?: React.ReactNode;
+  footer?: React.ReactNode;
+  children: React.ReactNode; // Conteúdo principal
 }
 
-const Layout: React.FC<LayoutProps> = ({
-  header,
-  sidebar,
-  footer,
-  children,
-}) => {
+const Layout: React.FC<LayoutProps> = ({ sidebar, children }) => {
   return (
-    <div className="flex mt-0  flex-wrap content-start overflow-hidden">
-      {/* Header */}
-      <div className="w-full mt-0">{header || <AppHeader />}</div>
-
+    <div className="flex flex-col-reverse md:flex-row h-screen overflow-hidden">
       {/* Sidebar */}
-      <div className="w-1/4 h-3/4">
+      <div className="w-full h-16 md:w-1/5 md:h-full">
         <SidebarProvider>
           {sidebar || <AppSidebar />}
         </SidebarProvider>
       </div>
 
-      {/* Content */}
-      <div className="grow h-3/4">{children}</div>
-
-      {/* Footer */}
-      <div className="w-full h-[5%]">
-        {footer || <h1>Direitos Reservados</h1>}
+      {/* Main Content */}
+      <div className="flex-grow h-full overflow-auto p-4">
+        {children}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
