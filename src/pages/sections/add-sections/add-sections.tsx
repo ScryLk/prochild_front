@@ -25,9 +25,11 @@ export default function AddSections() {
           <Button className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer">
             Salvar
           </Button>
-          <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
-            Cancelar
-          </Button>
+          <a href="/">
+            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
+              Cancelar
+            </Button>
+          </a>
         </div>
       </div>
     </Layout>

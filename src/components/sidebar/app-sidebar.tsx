@@ -93,7 +93,7 @@ export function AppSidebar() {
                 className="h-full w-full object-contain"
               />
             </div>
-            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            <SidebarGroupLabel>Prochild</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
