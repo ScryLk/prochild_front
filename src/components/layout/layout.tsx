@@ -1,6 +1,7 @@
 import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { MobileSidebar } from "@/components/sidebar/mobileSidebar/mobileSidebar";
 
 interface LayoutProps {
   header?: React.ReactNode;
@@ -11,9 +12,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ sidebar, children }) => {
   return (
-    <div className="flex md:flex-row h-screen overflow-hidden">
-      {/* Sidebar */}
-      <div className="h-16 md:h-full">
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      {/* Sidebar para telas maiores */}
+      <div className="hidden md:block w-1/5 h-full">
         <SidebarProvider>
           {sidebar || <AppSidebar />}
         </SidebarProvider>
@@ -23,6 +24,9 @@ const Layout: React.FC<LayoutProps> = ({ sidebar, children }) => {
       <div className="flex-grow h-full overflow-auto p-4">
         {children}
       </div>
+
+      {/* Sidebar para dispositivos móveis */}
+      <MobileSidebar />
     </div>
   );
 };

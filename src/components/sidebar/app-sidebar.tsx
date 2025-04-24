@@ -64,9 +64,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarContent className="bg-stone-100 flex md:flex-col">
+      <SidebarContent className="bg-stone-100 flex flex-col-reverse md:flex-col">
         {/* Footer com os ícones no modo responsivo */}
-        <SidebarFooter className="md:hidden flex justify-around bg-gray-200 p-2">
+        <SidebarFooter className="md:hidden fixed bottom-0 w-full bg-gray-200 p-2 flex justify-around">
           {items.map((item) => (
             <a
               key={item.title}
@@ -90,7 +90,7 @@ export function AppSidebar() {
               <img
                 src="./logo-color-three.png"
                 alt="Logo"
-                className="h-full w-full object-contain"
+                className="h-38 w-38 flex object-contain"
               />
             </div>
             <SidebarGroupLabel>Prochild</SidebarGroupLabel>
