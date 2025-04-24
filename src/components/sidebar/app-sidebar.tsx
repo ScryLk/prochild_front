@@ -64,7 +64,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarContent className="bg-stone-100 flex flex-col-reverse md:flex-col">
+      <SidebarContent className="bg-stone-100 flex md:flex-col">
         {/* Footer com os ícones no modo responsivo */}
         <SidebarFooter className="md:hidden flex justify-around bg-gray-200 p-2">
           {items.map((item) => (

@@ -11,9 +11,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ sidebar, children }) => {
   return (
-    <div className="flex flex-col-reverse md:flex-row h-screen overflow-hidden">
+    <div className="flex md:flex-row h-screen overflow-hidden">
       {/* Sidebar */}
-      <div className="w-full h-16 md:w-1/5 md:h-full">
+      <div className="h-16 md:h-full">
         <SidebarProvider>
           {sidebar || <AppSidebar />}
         </SidebarProvider>
