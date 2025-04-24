@@ -14,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ sidebar, children }) => {
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Sidebar para telas maiores */}
-      <div className="hidden md:block w-1/5 h-full">
+      <div className="hidden md:block h-full">
         <SidebarProvider>
           {sidebar || <AppSidebar />}
         </SidebarProvider>
