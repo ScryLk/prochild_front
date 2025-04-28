@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Breadcrumb } from "@/components/app-breadcrumb/app-breadcrumb";
-import { Pen, Trash, Library } from "lucide-react";
+import { Pen, Trash } from "lucide-react";
 
 export default function Trainings() {
   const breadcrumbItems = [

@@ -6,7 +6,6 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -125,16 +124,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function InterativeDash() {
-  const [activeChart, setActiveChart] =
+  const [activeChart] =
     React.useState<keyof typeof chartConfig>("desktop")
-
-  const total = React.useMemo(
-    () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
-    }),
-    []
-  )
 
   return (
     <Card>

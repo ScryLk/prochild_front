@@ -1,15 +1,11 @@
 import {
   Home,
   Search,
-  Settings,
-  User2,
-  ChevronUp,
   ListOrdered,
   LayoutGrid,
   Book,
+  ChevronDown,
 } from "lucide-react";
-
-import logo from "@public/logo-color.png"
 
 import { useLocation } from "react-router-dom";
 
@@ -24,6 +20,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -59,6 +56,7 @@ const items = [
     icon: Book,
   },
 ];
+
 export function AppSidebar() {
   const location = useLocation();
 
@@ -117,6 +115,26 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         </div>
+
+        {/* Footer com DropdownMenu */}
+        <SidebarFooter className="hidden md:block mt-auto p-4 border-t border-gray-300">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton className="flex items-center gap-2 w-full">
+                Select Workspace
+                <ChevronDown className="ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+              <DropdownMenuItem>
+                <span>Acme Inc</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <span>Acme Corp.</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarFooter>
       </SidebarContent>
     </Sidebar>
   );
