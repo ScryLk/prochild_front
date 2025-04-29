@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +23,12 @@ export default function Login() {
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Accept", "application/json");
 
+    // Adiciona o sessionid de forma xumbada
+    myHeaders.append(
+      "Cookie",
+      "sessionid=t0yd2l4j53gfwbszrvxmvi8qtkxxmxry; expires=Mon, 12 May 2025 12:02:38 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
+    );
+
     const raw = JSON.stringify({
       email: email,
       password_hash: password,
@@ -33,7 +38,8 @@ export default function Login() {
       method: "POST",
       headers: myHeaders,
       body: raw,
-      redirect: "follow" as RequestRedirect, // Corrige o tipo de 'redirect'
+      redirect: "follow" as RequestRedirect,
+      credentials: "include", // Inclui cookies na requisição
     };
 
     try {
@@ -45,7 +51,13 @@ export default function Login() {
       if (response.ok) {
         const result = await response.json();
         console.log("Login bem-sucedido:", result);
-        // Redirecionar para o painel ou salvar o token no localStorage
+        const userData = {
+          id: result.id,
+          name: result.name,
+          email: result.email,
+          role: result.role,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
         window.location.href = "/";
       } else {
         const errorData = await response.json();

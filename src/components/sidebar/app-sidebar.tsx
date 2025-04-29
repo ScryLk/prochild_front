@@ -4,10 +4,11 @@ import {
   ListOrdered,
   LayoutGrid,
   Book,
-  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import {
   Sidebar,
@@ -59,6 +60,45 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const [userName, setUserName] = useState<string | null>("");
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          const userId = user.id;
+  
+          const myHeaders = new Headers();
+          myHeaders.append("Accept", "application/json");
+  
+          const requestOptions: RequestInit = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow",
+          };
+  
+          const response = await fetch(`http://127.0.0.1:8000/users/${userId}/`, requestOptions);
+  
+          if (response.ok) {
+            const result = await response.json();
+            setUserName(result.name || "Usuário");
+          } else {
+            console.error("Erro ao buscar o nome do usuário:", response.status);
+            setUserName("Usuário");
+          }
+        } else {
+          setUserName("Usuário");
+        }
+      } catch (error) {
+        console.error("Erro ao obter o nome do usuário:", error);
+        setUserName("Usuário");
+      }
+    };
+  
+    fetchUserName();
+  }, []);
 
   return (
     <Sidebar>
@@ -120,17 +160,20 @@ export function AppSidebar() {
         <SidebarFooter className="hidden md:block mt-auto p-4 border-t border-gray-300">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className="flex items-center gap-2 w-full">
-                Select Workspace
-                <ChevronDown className="ml-auto" />
+              <SidebarMenuButton className="flex cursor-pointer items-center gap-2 w-full">
+                {userName}
+                <ChevronUp className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-              <DropdownMenuItem>
-                <span>Acme Inc</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span>Acme Corp.</span>
+            <DropdownMenuContent className="w-[--radix-popper-anchor-width] hover:border-1 hover:border-gray-500">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  window.location.href = "/login";
+                }}
+              >
+                Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
