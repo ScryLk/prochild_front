@@ -2,6 +2,7 @@ import Layout from "@/components/layout/layout";
 import { Breadcrumb } from "@/components/app-breadcrumb/app-breadcrumb";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function AddSections() {
   const breadcrumbItems = [
@@ -9,6 +10,42 @@ export default function AddSections() {
     { label: "Seções", href: "/sections" },
     { label: "Adicionar Seção", href: "/addsections" },
   ];
+
+  const [section, setSection] = useState("");
+
+  async function handleAddSection() {
+    if (!section.trim()) {
+      alert("O nome da seção não pode estar vazio.");
+      return;
+    }
+  
+    try {
+      const raw = JSON.stringify({
+        nome: section, // Usa o valor do estado 'section'
+      });
+  
+      const requestOptions: RequestInit = {
+        method: "POST",
+        credentials: "include",
+        body: raw,
+      };
+  
+      const response = await fetch("http://127.0.0.1:8000/sections/", requestOptions);
+  
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Seção adicionada com sucesso:", result);
+        alert("Seção adicionada com sucesso!");
+        window.location.href = "/sections"; // Redireciona para a página de seções
+      } else {
+        console.error("Erro ao adicionar a seção:", response.status);
+        alert("Erro ao adicionar a seção.");
+      }
+    } catch (error) {
+      console.error("Erro ao conectar ao servidor:", error);
+      alert("Erro ao conectar ao servidor.");
+    }
+  }
 
   return (
     <Layout>
@@ -20,12 +57,17 @@ export default function AddSections() {
           id="category-name"
           placeholder="Nome da Seção"
           className="w-3/5"
+          value={section}
+          onChange={(e) => setSection(e.target.value)}
         />
         <div className="flex gap-3">
-          <Button className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer">
+          <Button
+            className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
+            onClick={handleAddSection}
+          >
             Salvar
           </Button>
-          <a href="/">
+          <a href="/sections">
             <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
               Cancelar
             </Button>

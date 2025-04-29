@@ -2,6 +2,9 @@ import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { MobileSidebar } from "@/components/sidebar/mobileSidebar/mobileSidebar";
+import { Toaster } from "@/components/ui/sonner"
+
+
 
 interface LayoutProps {
   header?: React.ReactNode;
@@ -27,6 +30,9 @@ const Layout: React.FC<LayoutProps> = ({ sidebar, children }) => {
 
       {/* Sidebar para dispositivos móveis */}
       <MobileSidebar />
+      <Toaster />
+
+      {/* Toaster para exibir notificações */}
     </div>
   );
 };
