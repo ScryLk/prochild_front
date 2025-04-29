@@ -23,6 +23,8 @@ import { Pen, Trash } from "lucide-react";
 interface Section {
   id: number;
   nome: string;
+  quantidade_categorias: number;
+  quantidade_treinamentos: number;
 }
 
 export default function Sections() {
@@ -96,45 +98,47 @@ export default function Sections() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sections.map((section) => (
-              <TableRow key={section.id}>
-                <TableCell className="font-medium">{section.nome}</TableCell>
-                <TableCell className="flex items-center gap-2">
-                  <div className="flex gap-5 items-center justify-center">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <a href={`/sections/edit/${section.id}`}>
-                            <div className="hover:bg-emerald-300 rounded-md p-2">
-                              <Pen color="blue" />
-                            </div>
-                          </a>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Editar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={() => handleDelete(section.id)}
-                            className="hover:bg-red-300 rounded-md p-2"
-                          >
-                            <Trash color="red" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Excluir</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+  {sections.map((section) => (
+    <TableRow key={section.id}>
+      <TableCell className="font-medium">{section.nome}</TableCell>
+      <TableCell>{section.quantidade_categorias ?? 0}</TableCell> {/* Fallback para 0 */}
+      <TableCell>{section.quantidade_treinamentos ?? 0}</TableCell> {/* Fallback para 0 */}
+      <TableCell className="flex items-center gap-2">
+        <div className="flex gap-5 items-center cursor-pointer justify-center">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a href={`/sections/edit/${section.id}`}>
+                  <div className="hover:bg-emerald-300 rounded-md p-2">
+                    <Pen color="blue" />
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Editar</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => handleDelete(section.id)}
+                  className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
+                >
+                  <Trash color="red" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Excluir</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
         </Table>
       </div>
     </Layout>
