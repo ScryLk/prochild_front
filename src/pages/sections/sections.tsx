@@ -168,7 +168,9 @@ export default function Sections() {
         {error && <p className="text-red-500">{error}</p>}
 
         <Table>
-          <TableCaption>Lista de Seções</TableCaption>
+          <TableCaption> {sections.length === 0
+      ? "Nenhuma seção cadastrada. Adicione uma seção."
+      : "Lista de Seções"}</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-2/6">Seção</TableHead>
