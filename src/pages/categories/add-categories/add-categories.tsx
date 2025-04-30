@@ -107,10 +107,14 @@ export default function AddCategories() {
   const handleSaveIcon = () => {
     const selected = icons.find((icon) => icon.id === selectedIcon);
     if (selected) {
-      setSavedIcon(selected.id);
+      setSavedIcon(capitalizeFirstLetter(selected.id)); // Salva o id com a primeira letra maiúscula
       setSavedIconComponent(selected.icon); // Salva o componente do ícone
       setIsDialogOpen(false); // Fecha o Dialog
     }
+  };
+
+  const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   const handleAddCategory = async () => {
@@ -118,14 +122,14 @@ export default function AddCategories() {
       alert("Preencha todos os campos antes de salvar.");
       return;
     }
-
+  
     try {
       const raw = JSON.stringify({
         secao_id: selectedSection,
-        nome: categoryName,
-        icone_id: savedIcon,
+        nome: categoryName, 
+        icone_id: savedIcon, 
       });
-
+  
       const requestOptions: RequestInit = {
         method: "POST",
         headers: {
@@ -134,9 +138,9 @@ export default function AddCategories() {
         body: raw,
         credentials: "include",
       };
-
+  
       const response = await fetch("http://127.0.0.1:8000/categories/", requestOptions);
-
+  
       if (response.ok) {
         toast.success("Categoria adicionada com sucesso!"); // Exibe o toast de sucesso
         setTimeout(() => {
@@ -216,10 +220,7 @@ export default function AddCategories() {
                         : "border-gray-300"
                     }`}
                   >
-                    <div className="text-2xl">{icon.icon}</div>
-                    <span className="text-sm mt-2 text-center break-words">
-                      {icon.label}
-                    </span>
+                    <div className="text-2xl">{icon.icon}</div>       
                   </button>
                 ))}
               </div>
