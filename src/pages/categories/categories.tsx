@@ -12,6 +12,24 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
+  Home,
+  Search,
+  ListOrdered,
+  LayoutGrid,
+  Book,
+  Heart,
+  Car,
+  Accessibility,
+  Stethoscope,
+  HeartPulse,
+  Bandage,
+  Syringe,
+  Pill,
+  Thermometer,
+  Brain,
+  Eye,
+} from "lucide-react";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -32,6 +50,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Category {
   id: number;
@@ -43,6 +80,25 @@ interface Category {
   updated_at: Date;
 }
 
+const icons = [
+  { id: "home", icon: <Home />, label: "Home" },
+  { id: "search", icon: <Search />, label: "Pesquisar" },
+  { id: "sections", icon: <ListOrdered />, label: "Seções" },
+  { id: "categories", icon: <LayoutGrid />, label: "Categorias" },
+  { id: "trainings", icon: <Book />, label: "Treinamentos" },
+  { id: "heart", icon: <Heart />, label: "Favoritos" },
+  { id: "car", icon: <Car />, label: "Carro" },
+  { id: "accessibility", icon: <Accessibility />, label: "Acessibilidade" },
+  { id: "stethoscope", icon: <Stethoscope />, label: "Estetoscópio" },
+  { id: "heartPulse", icon: <HeartPulse />, label: "Batimento Cardíaco" },
+  { id: "bandage", icon: <Bandage />, label: "Curativo" },
+  { id: "syringe", icon: <Syringe />, label: "Seringa" },
+  { id: "pill", icon: <Pill />, label: "Pílula" },
+  { id: "thermometer", icon: <Thermometer />, label: "Termômetro" },
+  { id: "brain", icon: <Brain />, label: "Cérebro" },
+  { id: "eye", icon: <Eye />, label: "Olho" },
+];
+
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string>("");
@@ -51,15 +107,59 @@ export default function Categories() {
   );
   const [editNome, setEditNome] = useState<string>("");
   const [editOpen, setEditOpen] = useState<boolean>(false);
-  const [selectedSection, setSelectedSection] = useState<Category | null>(null);
+  const [editIcon, setEditIcon] = useState<string>("");
+  const [editSecao, setEditSecao] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
-  ); // Adicionado estado para a categoria selecionada
+  );
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null); // Ícone atualmente selecionado
+  const [sections, setSections] = useState<Section[]>([]);
+  const [editSection, setEditSection] = useState<number | null>(null);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Categorias", href: "/categories" },
   ];
+
+  interface Category {
+    id: number;
+    nome: string;
+    treinamentos_cadastrados: number;
+    secao_nome: string;
+    secao_id: number; // Adicionado para corrigir o erro
+    icone_id: string;
+    created_at: Date;
+    updated_at: Date;
+  }
+
+  interface Section {
+    id: number;
+    nome: string;
+  }
+
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/sections/sections/",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          const result = await response.json();
+          setSections(result.Sucesso || []); // Acessa o campo "Sucesso" corretamente
+        } else {
+          toast.error("Erro ao carregar as seções.");
+        }
+      } catch (error) {
+        toast.error("Erro ao conectar ao servidor.");
+      }
+    };
+
+    fetchSections();
+  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -71,7 +171,6 @@ export default function Categories() {
             credentials: "include",
           }
         );
-
         if (response.ok) {
           const result = await response.json();
           setCategories(result.success || []);
@@ -108,7 +207,15 @@ export default function Categories() {
     }
   };
 
-  async function handleEditSave() {
+  const handleEditClick = (category: Category) => {
+    setSelectedCategory(category);
+    setEditNome(category.nome);
+    setEditSection(category.secao_id); // Configura o ID da seção vinculada
+    setEditIcon(category.icone_id);
+    setEditOpen(true); // Abre o diálogo de edição
+  };
+
+  const handleEditSave = async () => {
     if (!selectedCategory || editNome.trim() === "") {
       toast.error("O nome não pode estar vazio.");
       return;
@@ -118,22 +225,25 @@ export default function Categories() {
         `http://127.0.0.1:8000/categories/edit/${selectedCategory.id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             nome: editNome,
-            secao_id: selectedCategory.secao_nome,
-            icone_id: selectedCategory.icone_id,
+            secao_nome: editSecao,
+            icone_id: editIcon,
           }),
-          credentials: "include",
         }
       );
       if (response.ok) {
         setCategories((prev) =>
           prev.map((category) =>
             category.id === selectedCategory.id
-              ? { ...category, nome: editNome }
+              ? {
+                  ...category,
+                  nome: editNome,
+                  secao_nome: editSecao,
+                  icone_id: editIcon,
+                }
               : category
           )
         );
@@ -146,7 +256,7 @@ export default function Categories() {
     } catch (error) {
       toast.error("Erro ao conectar ao servidor.");
     }
-  }
+  };
 
   return (
     <Layout>
@@ -204,18 +314,24 @@ export default function Categories() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <a href={`/categories/edit/${category.id}`}>
-                            <div className="hover:bg-emerald-300 rounded-md p-2">
-                              <Pen color="blue" />
-                            </div>
-                          </a>
+                          <button
+                            className="hover:bg-emerald-300 cursor-pointer rounded-md p-2"
+                            onClick={() => {
+                              setEditNome(category.nome);
+                              setEditIcon(category.icone_id);
+                              setEditSecao(category.secao_nome);
+                              setSelectedCategory(category);
+                              setEditOpen(true); // Abre o diálogo de edição
+                            }}
+                          >
+                            <Pen color="blue" />
+                          </button>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Editar</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-
                     <AlertDialog>
                       <TooltipProvider>
                         <Tooltip>
@@ -236,7 +352,6 @@ export default function Categories() {
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
@@ -265,7 +380,6 @@ export default function Categories() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -285,15 +399,98 @@ export default function Categories() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Categoria</DialogTitle>
+            <DialogDescription>
+              Altere os campos abaixo e clique em "Salvar".
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Label htmlFor="edit-nome">Nome</Label>
+            <Input
+              id="edit-nome"
+              value={editNome}
+              onChange={(e) => setEditNome(e.target.value)}
+            />
+
+            <Label htmlFor="edit-secao">Seção</Label>
+            <Select
+              value={editSection?.toString()} // Define o valor inicial como o ID da seção vinculada
+              onValueChange={(value) => setEditSection(Number(value))} // Atualiza o estado ao selecionar uma nova seção
+            >
+              <SelectTrigger id="edit-secao" className="w-auto">
+                <SelectValue placeholder="Selecione uma seção" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Seções</SelectLabel>
+                  {sections.map((section) => (
+                    <SelectItem
+                      key={section.id}
+                      value={section.id.toString()}
+                      className="cursor-pointer hover:bg-gray-100 hover:text-black rounded-md"
+                    >
+                      {section.nome} {/* Exibe o nome da seção */}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Label htmlFor="edit-icon">Ícone</Label>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 gap-4">
+                {icons.map((icon) => (
+                  <button
+                    key={icon.id}
+                    onClick={() => setSelectedIcon(icon.id)}
+                    className={`p-4 border cursor-pointer rounded-md flex flex-col items-center justify-center ${
+                      selectedIcon === icon.id
+                        ? "border-emerald-500 bg-emerald-50"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <div className="text-2xl">{icon.icon}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-2">
+              <Label>Pré-visualização do ícone:</Label>
+              <div className="mt-1">
+                {editIcon && <DynamicIcon iconName={editIcon} />}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              className="bg-gray-500 hover:bg-gray-600"
+              onClick={() => setEditOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="bg-emerald-500 hover:bg-emerald-600"
+              onClick={handleEditSave}
+            >
+              Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <ToastContainer />
     </Layout>
   );
 }
 
-// Componente para ícone dinâmico
 function DynamicIcon({ iconName }: { iconName: string }) {
   const Icon = Icons[iconName as keyof typeof Icons] as React.ComponentType;
-
   if (!Icon) return <span>Ícone não encontrado</span>;
   return <Icon />;
 }
