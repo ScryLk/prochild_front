@@ -29,10 +29,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ToastContainer, toast } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css"; 
-
-
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Section {
   id: number;
@@ -44,6 +53,9 @@ interface Section {
 export default function Sections() {
   const [sections, setSections] = useState<Section[]>([]);
   const [error, setError] = useState<string>("");
+  const [editNome, setEditNome] = useState<string>("");
+  const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -57,27 +69,23 @@ export default function Sections() {
         myHeaders.append("Accept", "application/json");
         myHeaders.append("Cookie", document.cookie);
 
-        const requestOptions: RequestInit = {
-          method: "GET",
-          headers: myHeaders,
-          credentials: "include",
-          redirect: "follow",
-        };
-
         const response = await fetch(
           "http://127.0.0.1:8000/sections/sections/",
-          requestOptions
+          {
+            method: "GET",
+            headers: myHeaders,
+            credentials: "include",
+            redirect: "follow",
+          }
         );
 
         if (response.ok) {
           const result = await response.json();
           setSections(result.Sucesso || []);
         } else {
-          console.error("Erro ao buscar as seções:", response.status);
           setError("Erro ao carregar as seções.");
         }
       } catch (error) {
-        console.error("Erro ao conectar ao servidor:", error);
         setError("Erro ao conectar ao servidor.");
       }
     };
@@ -95,17 +103,55 @@ export default function Sections() {
         }
       );
       if (response.ok) {
-        setSections((prev) => prev.filter((section) => section.id !== sectionId));
-        toast.success("Seção deletada com sucesso!"); // Exibe mensagem de sucesso
+        setSections((prev) =>
+          prev.filter((section) => section.id !== sectionId)
+        );
+        toast.success("Seção deletada com sucesso!");
       } else {
-        console.error("Erro ao excluir a seção:", response.status);
-        toast.error("Erro ao excluir a seção."); 
+        toast.error("Erro ao excluir a seção.");
       }
     } catch (error) {
-      console.error("Erro ao conectar ao servidor:", error);
-      toast.error("Erro ao conectar ao servidor."); 
+      toast.error("Erro ao conectar ao servidor.");
     }
   }
+
+  async function handleEditSave() {
+    if (!selectedSection || editNome.trim() === "") {
+      toast.error("O nome não pode estar vazio.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/sections/edit/${selectedSection.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": document.cookie,
+          },
+          body: JSON.stringify({ nome: editNome }),
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        setSections((prev) =>
+          prev.map((s) =>
+            s.id === selectedSection.id ? { ...s, nome: editNome } : s
+          )
+        );
+        toast.success("Seção atualizada com sucesso!");
+        setEditOpen(false);
+        setSelectedSection(null);
+      } else {
+        toast.error("Erro ao atualizar a seção.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar ao servidor.");
+    }
+  }
+
   return (
     <Layout>
       <Breadcrumb items={breadcrumbItems} />
@@ -120,6 +166,7 @@ export default function Sections() {
           </a>
         </div>
         {error && <p className="text-red-500">{error}</p>}
+
         <Table>
           <TableCaption>Lista de Seções</TableCaption>
           <TableHeader>
@@ -141,11 +188,16 @@ export default function Sections() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <a href={`/sections/edit/${section.id}`}>
-                            <div className="hover:bg-emerald-300 rounded-md p-2">
-                              <Pen color="blue" />
-                            </div>
-                          </a>
+                          <button
+                            className="hover:bg-emerald-300 rounded-md p-2 cursor-pointer"
+                            onClick={() => {
+                              setSelectedSection(section);
+                              setEditNome(section.nome);
+                              setEditOpen(true);
+                            }}
+                          >
+                            <Pen color="blue" />
+                          </button>
                         </TooltipTrigger>
                         <TooltipContent>Editar</TooltipContent>
                       </Tooltip>
@@ -156,7 +208,7 @@ export default function Sections() {
                         <TooltipTrigger asChild>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <button className="hover:bg-red-300 cursor-pointer  rounded-md p-2">
+                              <button className="hover:bg-red-300 rounded-md p-2 cursor-pointer">
                                 <Trash color="red" />
                               </button>
                             </AlertDialogTrigger>
@@ -166,13 +218,14 @@ export default function Sections() {
                                   Confirmar Exclusão
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Tem certeza que deseja excluir a seção "{section.nome}"? Esta ação não pode ser desfeita.
+                                  Tem certeza que deseja excluir a seção "
+                                  {section.nome}"?
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
-                                  className="bg-red-500 hover:bg-red-600 cursor-pointer text-white"
+                                  className="bg-red-500 hover:bg-red-600 text-white"
                                   onClick={() => handleDelete(section.id)}
                                 >
                                   Excluir
@@ -191,6 +244,42 @@ export default function Sections() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Seção</DialogTitle>
+            <DialogDescription>
+              Altere o nome da seção e clique em "Salvar".
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Label htmlFor="edit-nome">Nome</Label>
+            <Input
+              id="edit-nome"
+              value={editNome}
+              onChange={(e) => setEditNome(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-gray-500 cursor-pointer hover:bg-gray-600"
+              type="button"
+              onClick={() => setEditOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="bg-emerald-500 cursor-pointer hover:bg-emerald-600"
+              type="button"
+              onClick={handleEditSave}
+            >
+              Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <ToastContainer />
     </Layout>
   );

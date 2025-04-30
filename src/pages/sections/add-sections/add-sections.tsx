@@ -3,6 +3,8 @@ import { Breadcrumb } from "@/components/app-breadcrumb/app-breadcrumb";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddSections() {
   const breadcrumbItems = [
@@ -15,35 +17,37 @@ export default function AddSections() {
 
   async function handleAddSection() {
     if (!section.trim()) {
-      alert("O nome da seção não pode estar vazio.");
+      toast.error("O nome da seção não pode estar vazio."); // Exibe mensagem de erro
       return;
     }
-  
+
     try {
       const raw = JSON.stringify({
         nome: section, // Usa o valor do estado 'section'
       });
-  
+
       const requestOptions: RequestInit = {
         method: "POST",
         credentials: "include",
         body: raw,
       };
-  
+
       const response = await fetch("http://127.0.0.1:8000/sections/", requestOptions);
-  
+
       if (response.ok) {
         const result = await response.json();
         console.log("Seção adicionada com sucesso:", result);
-        alert("Seção adicionada com sucesso!");
-        window.location.href = "/sections"; // Redireciona para a página de seções
+        toast.success("Seção adicionada com sucesso!"); // Exibe mensagem de sucesso
+        setTimeout(() => {
+          window.location.href = "/sections"; // Redireciona para a página de seções
+        }, 2000); // Aguarda 2 segundos antes de redirecionar
       } else {
         console.error("Erro ao adicionar a seção:", response.status);
-        alert("Erro ao adicionar a seção.");
+        toast.error("Erro ao adicionar a seção."); // Exibe mensagem de erro
       }
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
-      alert("Erro ao conectar ao servidor.");
+      toast.error("Erro ao conectar ao servidor."); // Exibe mensagem de erro
     }
   }
 
@@ -74,6 +78,7 @@ export default function AddSections() {
           </a>
         </div>
       </div>
+      <ToastContainer />
     </Layout>
   );
 }
