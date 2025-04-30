@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -120,7 +119,6 @@ export default function Sections() {
       toast.error("O nome não pode estar vazio.");
       return;
     }
-
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/sections/edit/${selectedSection.id}`,
@@ -128,13 +126,12 @@ export default function Sections() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Cookie": document.cookie,
+            Cookie: document.cookie,
           },
           body: JSON.stringify({ nome: editNome }),
           credentials: "include",
         }
       );
-
       if (response.ok) {
         setSections((prev) =>
           prev.map((s) =>
@@ -166,11 +163,13 @@ export default function Sections() {
           </a>
         </div>
         {error && <p className="text-red-500">{error}</p>}
-
         <Table>
-          <TableCaption> {sections.length === 0
-      ? "Nenhuma seção cadastrada. Adicione uma seção."
-      : "Lista de Seções"}</TableCaption>
+          <TableCaption>
+            {" "}
+            {sections.length === 0
+              ? "Nenhuma seção cadastrada. Adicione uma seção."
+              : "Lista de Seções"}
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-2/6">Seção</TableHead>
@@ -204,7 +203,6 @@ export default function Sections() {
                         <TooltipContent>Editar</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -246,7 +244,6 @@ export default function Sections() {
           </TableBody>
         </Table>
       </div>
-
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
@@ -281,7 +278,6 @@ export default function Sections() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       <ToastContainer />
     </Layout>
   );

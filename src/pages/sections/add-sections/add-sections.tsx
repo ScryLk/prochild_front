@@ -17,13 +17,13 @@ export default function AddSections() {
 
   async function handleAddSection() {
     if (!section.trim()) {
-      toast.error("O nome da seção não pode estar vazio."); // Exibe mensagem de erro
+      toast.error("O nome da seção não pode estar vazio."); 
       return;
     }
 
     try {
       const raw = JSON.stringify({
-        nome: section, // Usa o valor do estado 'section'
+        nome: section, 
       });
 
       const requestOptions: RequestInit = {
@@ -37,17 +37,17 @@ export default function AddSections() {
       if (response.ok) {
         const result = await response.json();
         console.log("Seção adicionada com sucesso:", result);
-        toast.success("Seção adicionada com sucesso!"); // Exibe mensagem de sucesso
+        toast.success("Seção adicionada com sucesso!");
         setTimeout(() => {
-          window.location.href = "/sections"; // Redireciona para a página de seções
-        }, 2000); // Aguarda 2 segundos antes de redirecionar
+          window.location.href = "/sections"; 
+        }, 2000);
       } else {
         console.error("Erro ao adicionar a seção:", response.status);
-        toast.error("Erro ao adicionar a seção."); // Exibe mensagem de erro
+        toast.error("Erro ao adicionar a seção."); 
       }
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
-      toast.error("Erro ao conectar ao servidor."); // Exibe mensagem de erro
+      toast.error("Erro ao conectar ao servidor."); 
     }
   }
 

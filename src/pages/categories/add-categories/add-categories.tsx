@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "@/components/layout/layout";
 import { Breadcrumb } from "@/components/app-breadcrumb/app-breadcrumb";
 import { Input } from "@/components/ui/input";
@@ -39,13 +39,22 @@ import {
   Brain,
   Eye,
 } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { JSX } from "react";
 
+interface Section {
+  id: number;
+  nome: string;
+}
+
 export default function AddCategories() {
+  const [sections, setSections] = useState<Section[]>([]); // Estado para armazenar as seções
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null); // Ícone atualmente selecionado
   const [savedIcon, setSavedIcon] = useState<string | null>(null); // Ícone salvo após clicar em "Salvar Ícone"
   const [savedIconComponent, setSavedIconComponent] = useState<JSX.Element | null>(null); // Componente do ícone salvo
-  const [currentPage, setCurrentPage] = useState(1); // Página atual para a paginação
+  const [categoryName, setCategoryName] = useState<string>(""); // Nome da categoria
+  const [selectedSection, setSelectedSection] = useState<string | null>(null); // Seção selecionada
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Estado para controlar a visibilidade do Dialog
 
   const breadcrumbItems = [
@@ -73,24 +82,27 @@ export default function AddCategories() {
     { id: "eye", icon: <Eye />, label: "Olho" },
   ];
 
-  const itemsPerPage = 8;
-  const totalPages = Math.ceil(icons.length / itemsPerPage);
-  const paginatedIcons = icons.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/sections/sections/", {
+          method: "GET",
+          credentials: "include",
+        });
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+        if (response.ok) {
+          const result = await response.json();
+          setSections(result.Sucesso || []); // Supondo que os dados estão na propriedade "Sucesso"
+        } else {
+          console.error("Erro ao carregar as seções.");
+        }
+      } catch (error) {
+        console.error("Erro ao conectar ao servidor:", error);
+      }
+    };
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+    fetchSections();
+  }, []);
 
   const handleSaveIcon = () => {
     const selected = icons.find((icon) => icon.id === selectedIcon);
@@ -98,6 +110,44 @@ export default function AddCategories() {
       setSavedIcon(selected.id);
       setSavedIconComponent(selected.icon); // Salva o componente do ícone
       setIsDialogOpen(false); // Fecha o Dialog
+    }
+  };
+
+  const handleAddCategory = async () => {
+    if (!categoryName.trim() || !selectedSection || !savedIcon) {
+      alert("Preencha todos os campos antes de salvar.");
+      return;
+    }
+
+    try {
+      const raw = JSON.stringify({
+        secao_id: selectedSection,
+        nome: categoryName,
+        icone_id: savedIcon,
+      });
+
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: raw,
+        credentials: "include",
+      };
+
+      const response = await fetch("http://127.0.0.1:8000/categories/", requestOptions);
+
+      if (response.ok) {
+        toast.success("Categoria adicionada com sucesso!"); // Exibe o toast de sucesso
+        setTimeout(() => {
+          window.location.href = "/categories"; // Redireciona após 2 segundos
+        }, 2000);
+      } else {
+        toast.error("Erro ao adicionar a categoria."); // Exibe o toast de erro
+      }
+    } catch (error) {
+      console.error("Erro ao conectar ao servidor:", error);
+      toast.error("Erro ao conectar ao servidor."); // Exibe o toast de erro
     }
   };
 
@@ -112,18 +162,23 @@ export default function AddCategories() {
           id="category-name"
           placeholder="Nome da Categoria"
           className="w-3/5"
+          value={categoryName}
+          onChange={(e) => setCategoryName(e.target.value)}
         />
 
-        <label htmlFor="parent-category">Filha de</label>
-        <Select onValueChange={(value) => console.log("Seção selecionada:", savedIcon, value)}>
+        <label htmlFor="parent-category">Seção</label>
+        <Select onValueChange={(value) => setSelectedSection(value)}>
           <SelectTrigger id="parent-category" className="w-[180px] cursor-pointer">
-            <SelectValue placeholder="Seção" />
+            <SelectValue placeholder="Selecione uma seção" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Seções</SelectLabel>
-              <SelectItem value="cuidadosFisicos">Cuidados Físicos</SelectItem>
-              <SelectItem value="partesCorpo">Partes do Corpo</SelectItem>
+              {sections.map((section) => (
+                <SelectItem key={section.id} value={section.id.toString()}>
+                  {section.nome}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -151,7 +206,7 @@ export default function AddCategories() {
 
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 gap-4">
-                {paginatedIcons.map((icon) => (
+                {icons.map((icon) => (
                   <button
                     key={icon.id}
                     onClick={() => setSelectedIcon(icon.id)}
@@ -170,28 +225,6 @@ export default function AddCategories() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center mt-4">
-              <Button
-                variant="outline"
-                className="cursor-pointer"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                Anterior
-              </Button>
-              <span>
-                Página {currentPage} de {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                className="cursor-pointer"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Próxima
-              </Button>
-            </div>
-
             <DialogFooter>
               <Button
                 type="button"
@@ -206,18 +239,20 @@ export default function AddCategories() {
 
         <div className="flex gap-3">
           <Button
-            type="submit"
+            type="button"
+            onClick={handleAddCategory}
             className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
           >
             Salvar
           </Button>
-          <a href="/">
+          <a href="/categories">
             <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
               Cancelar
             </Button>
           </a>
         </div>
       </div>
+      <ToastContainer /> {/* Adicionado para exibir os toasts */}
     </Layout>
   );
 }
