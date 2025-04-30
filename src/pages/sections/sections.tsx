@@ -114,40 +114,40 @@ export default function Sections() {
     }
   }
 
-  async function handleEditSave() {
-    if (!selectedSection || editNome.trim() === "") {
-      toast.error("O nome não pode estar vazio.");
-      return;
-    }
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/sections/edit/${selectedSection.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: document.cookie,
-          },
-          body: JSON.stringify({ nome: editNome }),
-          credentials: "include",
-        }
-      );
-      if (response.ok) {
-        setSections((prev) =>
-          prev.map((s) =>
-            s.id === selectedSection.id ? { ...s, nome: editNome } : s
-          )
-        );
-        toast.success("Seção atualizada com sucesso!");
-        setEditOpen(false);
-        setSelectedSection(null);
-      } else {
-        toast.error("Erro ao atualizar a seção.");
+    async function handleEditSave() {
+      if (!selectedSection || editNome.trim() === "") {
+        toast.error("O nome não pode estar vazio.");
+        return;
       }
-    } catch (error) {
-      toast.error("Erro ao conectar ao servidor.");
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/sections/edit/${selectedSection.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: document.cookie,
+            },
+            body: JSON.stringify({ nome: editNome }),
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          setSections((prev) =>
+            prev.map((s) =>
+              s.id === selectedSection.id ? { ...s, nome: editNome } : s
+            )
+          );
+          toast.success("Seção atualizada com sucesso!");
+          setEditOpen(false);
+          setSelectedSection(null);
+        } else {
+          toast.error("Erro ao atualizar a seção.");
+        }
+      } catch (error) {
+        toast.error("Erro ao conectar ao servidor.");
+      }
     }
-  }
 
   return (
     <Layout>

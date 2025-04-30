@@ -46,7 +46,15 @@ interface Category {
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string>("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null
+  );
+  const [editNome, setEditNome] = useState<string>("");
+  const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [selectedSection, setSelectedSection] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  ); // Adicionado estado para a categoria selecionada
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -56,10 +64,13 @@ export default function Categories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/categories/categories/", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://127.0.0.1:8000/categories/categories/",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (response.ok) {
           const result = await response.json();
@@ -85,7 +96,9 @@ export default function Categories() {
         }
       );
       if (response.ok) {
-        setCategories((prev) => prev.filter((category) => category.id !== categoryId));
+        setCategories((prev) =>
+          prev.filter((category) => category.id !== categoryId)
+        );
         toast.success("Categoria deletada com sucesso!");
       } else {
         toast.error("Erro ao excluir a categoria.");
@@ -94,6 +107,46 @@ export default function Categories() {
       toast.error("Erro ao conectar ao servidor.");
     }
   };
+
+  async function handleEditSave() {
+    if (!selectedCategory || editNome.trim() === "") {
+      toast.error("O nome não pode estar vazio.");
+      return;
+    }
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/categories/edit/${selectedCategory.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nome: editNome,
+            secao_id: selectedCategory.secao_nome,
+            icone_id: selectedCategory.icone_id,
+          }),
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        setCategories((prev) =>
+          prev.map((category) =>
+            category.id === selectedCategory.id
+              ? { ...category, nome: editNome }
+              : category
+          )
+        );
+        toast.success("Categoria atualizada com sucesso!");
+        setEditOpen(false);
+        setSelectedCategory(null);
+      } else {
+        toast.error("Erro ao atualizar a categoria.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar ao servidor.");
+    }
+  }
 
   return (
     <Layout>
@@ -140,8 +193,12 @@ export default function Categories() {
                   </Suspense>
                 </TableCell>
                 <TableCell>{category.secao_nome}</TableCell>
-                <TableCell>{new Date(category.created_at).toLocaleString()}</TableCell>
-                <TableCell>{new Date(category.updated_at).toLocaleString()}</TableCell>
+                <TableCell>
+                  {new Date(category.created_at).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(category.updated_at).toLocaleString()}
+                </TableCell>
                 <TableCell className="flex items-center gap-2">
                   <div className="flex gap-5 items-center justify-center">
                     <TooltipProvider>
@@ -159,47 +216,55 @@ export default function Categories() {
                       </Tooltip>
                     </TooltipProvider>
 
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <AlertDialog>
+                    <AlertDialog>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
                             <AlertDialogTrigger asChild>
                               <button
                                 className="hover:bg-red-300 cursor-pointer rounded-md p-2"
-                                onClick={() => setSelectedCategoryId(category.id)}
+                                onClick={() =>
+                                  setSelectedCategoryId(category.id)
+                                }
                               >
                                 <Trash color="red" />
                               </button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza de que deseja excluir esta categoria? Esta ação não pode ser desfeita.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="bg-red-500 hover:bg-red-600"
-                                  onClick={() => {
-                                    if (selectedCategoryId !== null) {
-                                      handleDelete(selectedCategoryId);
-                                      setSelectedCategoryId(null);
-                                    }
-                                  }}
-                                >
-                                  Confirmar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Excluir</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Excluir</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Confirmar Exclusão
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza de que deseja excluir esta categoria?
+                            Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="cursor-pointer">
+                            Cancelar
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 cursor-pointer hover:bg-red-600"
+                            onClick={() => {
+                              if (selectedCategoryId !== null) {
+                                handleDelete(selectedCategoryId);
+                                setSelectedCategoryId(null);
+                              }
+                            }}
+                          >
+                            Confirmar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
 
                     <TooltipProvider>
                       <Tooltip>
