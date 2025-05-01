@@ -81,22 +81,21 @@ interface Category {
 }
 
 const icons = [
-  { id: "home", icon: <Home />, label: "Home" },
-  { id: "search", icon: <Search />, label: "Pesquisar" },
-  { id: "sections", icon: <ListOrdered />, label: "Seções" },
-  { id: "categories", icon: <LayoutGrid />, label: "Categorias" },
-  { id: "trainings", icon: <Book />, label: "Treinamentos" },
-  { id: "heart", icon: <Heart />, label: "Favoritos" },
-  { id: "car", icon: <Car />, label: "Carro" },
-  { id: "accessibility", icon: <Accessibility />, label: "Acessibilidade" },
-  { id: "stethoscope", icon: <Stethoscope />, label: "Estetoscópio" },
-  { id: "heartPulse", icon: <HeartPulse />, label: "Batimento Cardíaco" },
-  { id: "bandage", icon: <Bandage />, label: "Curativo" },
-  { id: "syringe", icon: <Syringe />, label: "Seringa" },
-  { id: "pill", icon: <Pill />, label: "Pílula" },
-  { id: "thermometer", icon: <Thermometer />, label: "Termômetro" },
-  { id: "brain", icon: <Brain />, label: "Cérebro" },
-  { id: "eye", icon: <Eye />, label: "Olho" },
+  { id: "Home", icon: <Home /> },
+  { id: "Search", icon: <Search /> },
+  { id: "LayoutGrid", icon: <LayoutGrid /> },
+  { id: "Book", icon: <Book /> },
+  { id: "Heart", icon: <Heart /> },
+  { id: "Car", icon: <Car /> },
+  { id: "Accessibility", icon: <Accessibility /> },
+  { id: "Stethoscope", icon: <Stethoscope /> },
+  { id: "HeartPulse", icon: <HeartPulse /> },
+  { id: "Bandage", icon: <Bandage /> },
+  { id: "Syringe", icon: <Syringe /> },
+  { id: "Pill", icon: <Pill /> },
+  { id: "Thermometer", icon: <Thermometer /> },
+  { id: "Brain", icon: <Brain /> },
+  { id: "Eye", icon: <Eye /> },
 ];
 
 export default function Categories() {
@@ -240,8 +239,8 @@ export default function Categories() {
 
       if (response.ok) {
         const result = await response.json();
-        setTrainings(result.success || []); // Atualiza o estado com os treinamentos retornados
-        setTrainingsDialogOpen(true); // Abre o diálogo para exibir os treinamentos
+        setTrainings(result.success || []);
+        setTrainingsDialogOpen(true); 
       } else {
         toast.error("Erro ao carregar os treinamentos.");
       }
@@ -251,24 +250,31 @@ export default function Categories() {
   };
 
   const handleEditSave = async () => {
-    if (!selectedCategory || editNome.trim() === "") {
-      toast.error("O nome não pode estar vazio.");
+    if (
+      !selectedCategory ||
+      editNome.trim() === "" ||
+      !editSection ||
+      !editIcon
+    ) {
+      toast.error("Preencha todos os campos.");
       return;
     }
+
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/categories/edit/${selectedCategory.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "include", // Inclui cookies automaticamente
           body: JSON.stringify({
-            nome: editNome,
-            secao_nome: editSecao,
-            icone_id: editIcon,
+            secao_id: editSection, // ID da seção selecionada
+            nome: editNome, // Nome da categoria
+            icone_svg: editIcon, // Ícone selecionado
           }),
         }
       );
+
       if (response.ok) {
         setCategories((prev) =>
           prev.map((category) =>
@@ -276,7 +282,7 @@ export default function Categories() {
               ? {
                   ...category,
                   nome: editNome,
-                  secao_nome: editSecao,
+                  secao_id: editSection,
                   icone_id: editIcon,
                 }
               : category
@@ -484,14 +490,18 @@ export default function Categories() {
                 {icons.map((icon) => (
                   <button
                     key={icon.id}
-                    onClick={() => setSelectedIcon(icon.id)}
+                    onClick={() => {
+                      setEditIcon(icon.id); // Atualiza o estado
+                      console.log(icon.id); // Exibe o ID do ícone selecionado no console
+                    }}                   
                     className={`p-4 border cursor-pointer rounded-md flex flex-col items-center justify-center ${
-                      selectedIcon === icon.id
+                      editIcon === icon.id
                         ? "border-emerald-500 bg-emerald-50"
                         : "border-gray-300"
                     }`}
                   >
                     <div className="text-2xl">{icon.icon}</div>
+                    <span className="text-sm">{icon.label}</span>
                   </button>
                 ))}
               </div>
@@ -500,7 +510,13 @@ export default function Categories() {
             <div className="mt-2">
               <Label>Pré-visualização do ícone:</Label>
               <div className="mt-1">
-                {editIcon && <DynamicIcon iconName={editIcon} />}
+                {editIcon ? (
+                  <DynamicIcon iconName={editIcon} />
+                ) : (
+                  <span className="text-gray-500">
+                    Nenhum ícone selecionado
+                  </span>
+                )}
               </div>
             </div>
           </div>
