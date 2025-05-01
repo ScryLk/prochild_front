@@ -116,8 +116,8 @@ export default function Categories() {
   const [sections, setSections] = useState<Section[]>([]);
   const [editSection, setEditSection] = useState<number | null>(null);
   const [trainings, setTrainings] = useState<Training[]>([]); // Estado para armazenar os treinamentos
-  const [trainingsDialogOpen, setTrainingsDialogOpen] = useState<boolean>(false); // Controle do diálogo de treinamentos
-
+  const [trainingsDialogOpen, setTrainingsDialogOpen] =
+    useState<boolean>(false); // Controle do diálogo de treinamentos
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -139,7 +139,7 @@ export default function Categories() {
     id: number;
     titulo: string;
     descricao: string;
-    arquivo_nome: string; 
+    arquivo_nome: string;
     arquivo_caminho: string;
     tamanho: string;
     created_at: Date;
@@ -237,7 +237,7 @@ export default function Categories() {
           credentials: "include", // Inclui cookies automaticamente
         }
       );
-  
+
       if (response.ok) {
         const result = await response.json();
         setTrainings(result.success || []); // Atualiza o estado com os treinamentos retornados
@@ -418,7 +418,9 @@ export default function Categories() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button className="hover:bg-gray-300 cursor-pointer rounded-md p-2"  onClick={() => handleListTraining(category.id)} // Passa o ID da categoria
+                          <button
+                            className="hover:bg-gray-300 cursor-pointer rounded-md p-2"
+                            onClick={() => handleListTraining(category.id)} // Passa o ID da categoria
                           >
                             <Library color="black" />
                           </button>
@@ -527,31 +529,47 @@ export default function Categories() {
               Lista de treinamentos vinculados à categoria.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {trainings.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {trainings.map((training) => (
-                  <li key={training.id} className="text-gray-700">
-                    <strong>{training.titulo}</strong>
-                    <p>{training.descricao}</p>
-                    <a
-                      href={training.arquivo_caminho}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      Baixar Arquivo
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500">Nenhum treinamento cadastrado.</p>
-            )}
-          </div>
+          <Table>
+            <TableCaption>Lista de Treinamentos</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Título</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Arquivo</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {trainings.length > 0 ? (
+                trainings.map((training) => (
+                  <TableRow key={training.id}>
+                    <TableCell className="font-medium">
+                      {training.titulo}
+                    </TableCell>
+                    <TableCell>{training.descricao}</TableCell>
+                    <TableCell>
+                      <a
+                        href={training.arquivo_caminho}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        Baixar Arquivo
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-gray-500">
+                    Nenhum treinamento cadastrado.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
           <DialogFooter>
             <Button
-              className="bg-gray-500 hover:bg-gray-600"
+              className="bg-gray-500 hover:bg-gray-600 cursor-pointer"
               onClick={() => setTrainingsDialogOpen(false)}
             >
               Fechar
