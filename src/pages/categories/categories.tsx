@@ -240,7 +240,7 @@ export default function Categories() {
       if (response.ok) {
         const result = await response.json();
         setTrainings(result.success || []);
-        setTrainingsDialogOpen(true); 
+        setTrainingsDialogOpen(true);
       } else {
         toast.error("Erro ao carregar os treinamentos.");
       }
@@ -358,10 +358,10 @@ export default function Categories() {
                           <button
                             className="hover:bg-emerald-300 cursor-pointer rounded-md p-2"
                             onClick={() => {
-                              setEditNome(category.nome);
-                              setEditIcon(category.icone_id);
-                              setEditSecao(category.secao_nome);
-                              setSelectedCategory(category);
+                              setEditNome(category.nome); // Define o nome da categoria
+                              setEditIcon(category.icone_id); // Define o ícone da categoria
+                              setEditSection(category.secao_id); // Define o ID da seção vinculada
+                              setSelectedCategory(category); // Define a categoria selecionada
                               setEditOpen(true); // Abre o diálogo de edição
                             }}
                           >
@@ -493,7 +493,7 @@ export default function Categories() {
                     onClick={() => {
                       setEditIcon(icon.id); // Atualiza o estado
                       console.log(icon.id); // Exibe o ID do ícone selecionado no console
-                    }}                   
+                    }}
                     className={`p-4 border cursor-pointer rounded-md flex flex-col items-center justify-center ${
                       editIcon === icon.id
                         ? "border-emerald-500 bg-emerald-50"
@@ -501,7 +501,6 @@ export default function Categories() {
                     }`}
                   >
                     <div className="text-2xl">{icon.icon}</div>
-                    <span className="text-sm">{icon.label}</span>
                   </button>
                 ))}
               </div>

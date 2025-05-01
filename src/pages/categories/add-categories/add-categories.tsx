@@ -172,7 +172,7 @@ export default function AddCategories() {
 
         <label htmlFor="parent-category">Seção</label>
         <Select onValueChange={(value) => setSelectedSection(value)}>
-          <SelectTrigger id="parent-category" className="w-[180px] cursor-pointer">
+          <SelectTrigger id="parent-category" className="w-3/5 cursor-pointer">
             <SelectValue placeholder="Selecione uma seção" />
           </SelectTrigger>
           <SelectContent>
