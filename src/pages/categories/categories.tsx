@@ -115,6 +115,9 @@ export default function Categories() {
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null); // Ícone atualmente selecionado
   const [sections, setSections] = useState<Section[]>([]);
   const [editSection, setEditSection] = useState<number | null>(null);
+  const [trainings, setTrainings] = useState<Training[]>([]); // Estado para armazenar os treinamentos
+  const [trainingsDialogOpen, setTrainingsDialogOpen] = useState<boolean>(false); // Controle do diálogo de treinamentos
+
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -130,6 +133,16 @@ export default function Categories() {
     icone_id: string;
     created_at: Date;
     updated_at: Date;
+  }
+
+  interface Training {
+    id: number;
+    titulo: string;
+    descricao: string;
+    arquivo_nome: string; 
+    arquivo_caminho: string;
+    tamanho: string;
+    created_at: Date;
   }
 
   interface Section {
@@ -213,6 +226,28 @@ export default function Categories() {
     setEditSection(category.secao_id); // Configura o ID da seção vinculada
     setEditIcon(category.icone_id);
     setEditOpen(true); // Abre o diálogo de edição
+  };
+
+  const handleListTraining = async (categoryId: number) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/trainings/trainings/categorie/${categoryId}`,
+        {
+          method: "GET",
+          credentials: "include", // Inclui cookies automaticamente
+        }
+      );
+  
+      if (response.ok) {
+        const result = await response.json();
+        setTrainings(result.success || []); // Atualiza o estado com os treinamentos retornados
+        setTrainingsDialogOpen(true); // Abre o diálogo para exibir os treinamentos
+      } else {
+        toast.error("Erro ao carregar os treinamentos.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar ao servidor.");
+    }
   };
 
   const handleEditSave = async () => {
@@ -383,7 +418,8 @@ export default function Categories() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button className="hover:bg-gray-300 cursor-pointer rounded-md p-2">
+                          <button className="hover:bg-gray-300 cursor-pointer rounded-md p-2"  onClick={() => handleListTraining(category.id)} // Passa o ID da categoria
+                          >
                             <Library color="black" />
                           </button>
                         </TooltipTrigger>
@@ -483,7 +519,46 @@ export default function Categories() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
+      <Dialog open={trainingsDialogOpen} onOpenChange={setTrainingsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Treinamentos Cadastrados</DialogTitle>
+            <DialogDescription>
+              Lista de treinamentos vinculados à categoria.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {trainings.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {trainings.map((training) => (
+                  <li key={training.id} className="text-gray-700">
+                    <strong>{training.titulo}</strong>
+                    <p>{training.descricao}</p>
+                    <a
+                      href={training.arquivo_caminho}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline"
+                    >
+                      Baixar Arquivo
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">Nenhum treinamento cadastrado.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-gray-500 hover:bg-gray-600"
+              onClick={() => setTrainingsDialogOpen(false)}
+            >
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <ToastContainer />
     </Layout>
   );
