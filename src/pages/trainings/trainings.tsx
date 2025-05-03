@@ -62,12 +62,12 @@ interface Training {
 }
 
 interface Categories {
-  id: number; 
-  nome: string; 
+  id: number;
+  nome: string;
   icone_id: string;
-  secao_nome: string; 
-  created_at: string; 
-  updated_at: string; 
+  secao_nome: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function Trainings() {
@@ -119,7 +119,7 @@ export default function Trainings() {
             credentials: "include",
           }
         );
-  
+
         if (response.ok) {
           const result = await response.json();
           setCategories(result.success || []); // Certifique-se de que "success" contém as categorias
@@ -131,7 +131,7 @@ export default function Trainings() {
         console.error("Erro ao conectar ao servidor.", error);
       }
     };
-  
+
     fetchCategories();
   }, []);
 
@@ -259,7 +259,25 @@ export default function Trainings() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
-                              className="hover:bg-yellow-300 rounded-md p-2"
+                              className="hover:bg-gray-300 rounded-md p-2 cursor-pointer"
+                              onClick={() => {
+                                setSelectedTraining(training);
+                                setIsDialogOpen(true); 
+                              }}
+                            >
+                              <Eye color="gray" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Visualizar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className="hover:bg-yellow-300 rounded-md p-2 cursor-pointer"
                               onClick={() => {
                                 setSelectedTraining(training);
                                 setIsEditDialogOpen(true);
@@ -279,7 +297,7 @@ export default function Trainings() {
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <button
-                                  className="hover:bg-red-300 rounded-md p-2"
+                                  className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
                                   onClick={() => setSelectedTraining(training)}
                                 >
                                   <Trash color="red" />
@@ -338,9 +356,7 @@ export default function Trainings() {
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>
-                  Editar Treinamento
-                </DialogTitle>
+                <DialogTitle>Editar Treinamento</DialogTitle>
               </DialogHeader>
               <div className="flex flex-col gap-4">
                 <Label htmlFor="">Titulo</Label>
@@ -394,34 +410,36 @@ export default function Trainings() {
                   </div>
                 </div>
                 <Select
-  value={selectedTraining?.categoria_id?.toString()} // Certifique-se de que o valor seja uma string
-  onValueChange={(value) =>
-    setSelectedTraining({
-      ...selectedTraining!,
-      categoria_id: parseInt(value), // Atualiza o ID da categoria corretamente
-    })
-  }
->
-  <Label htmlFor="">Categorias</Label>
-  <SelectTrigger className="border p-2 w-auto rounded">
-    <SelectValue placeholder="Selecione uma categoria" />
-  </SelectTrigger>
-  <SelectContent>
-  {categories.length > 0 ? (
-    categories.map((cat) => (
-      <SelectItem
-        key={cat.id}
-        value={cat.id.toString()}
-        className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
-      >
-        {cat.nome} {/* Exibe o nome da categoria */}
-      </SelectItem>
-    ))
-  ) : (
-    <p className="text-gray-500 px-4 py-2">Nenhuma categoria encontrada</p>
-  )}
-</SelectContent>
-</Select>
+                  value={selectedTraining?.categoria_id?.toString()} // Certifique-se de que o valor seja uma string
+                  onValueChange={(value) =>
+                    setSelectedTraining({
+                      ...selectedTraining!,
+                      categoria_id: parseInt(value), // Atualiza o ID da categoria corretamente
+                    })
+                  }
+                >
+                  <Label htmlFor="">Categorias</Label>
+                  <SelectTrigger className="border p-2 w-auto rounded">
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.length > 0 ? (
+                      categories.map((cat) => (
+                        <SelectItem
+                          key={cat.id}
+                          value={cat.id.toString()}
+                          className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
+                        >
+                          {cat.nome} {/* Exibe o nome da categoria */}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 px-4 py-2">
+                        Nenhuma categoria encontrada
+                      </p>
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
               <DialogFooter>
                 <Button
@@ -438,6 +456,66 @@ export default function Trainings() {
                   onClick={handleEdit}
                 >
                   Salvar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+        {selectedTraining && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Visualizar Treinamento</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-4">
+                <Label htmlFor="">Título</Label>
+                <p className="border p-2 rounded bg-gray-100">
+                  {selectedTraining.titulo}
+                </p>
+
+                <Label htmlFor="">Descrição</Label>
+                <p className="border p-2 rounded bg-gray-100">
+                  {selectedTraining.descricao}
+                </p>
+
+                <Label htmlFor="">Nome do Arquivo</Label>
+                <p className="border p-2 rounded bg-gray-100">
+                  {selectedTraining.arquivo_nome}
+                </p>
+
+                <Label htmlFor="">Arquivo</Label>
+                <a
+                  href={selectedTraining.arquivo_caminho}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  {selectedTraining.arquivo_nome}
+                </a>
+
+                <Label htmlFor="">Categoria</Label>
+                <p className="border p-2 rounded bg-gray-100">
+                  {categories.find(
+                    (cat) => cat.id === selectedTraining.categoria_id
+                  )?.nome || "Categoria não encontrada"}
+                </p>
+
+                <Label htmlFor="">Criado em</Label>
+                <p className="border p-2 rounded bg-gray-100">
+                  {new Date(selectedTraining.created_at).toLocaleString()}
+                </p>
+
+                <Label htmlFor="">Atualizado em</Label>
+                <p className="border p-2 rounded bg-gray-100">
+                  {new Date(selectedTraining.updated_at).toLocaleString()}
+                </p>
+              </div>
+              <DialogFooter>
+                <Button
+                  className="bg-gray-500 hover:bg-gray-600"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Fechar
                 </Button>
               </DialogFooter>
             </DialogContent>
