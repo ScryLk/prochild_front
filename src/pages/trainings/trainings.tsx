@@ -148,12 +148,12 @@ export default function Trainings() {
         setTrainings((prev) =>
           prev.filter((training) => training.id !== trainingId)
         );
-        toast.success("Treinamento deletado com sucesso!");
+        toast.success("Treinamento deletado com sucesso!"); // Exibe o toast de sucesso
       } else {
-        toast.error("Erro ao excluir o treinamento.");
+        toast.error("Erro ao excluir o treinamento."); // Exibe o toast de erro
       }
     } catch (error) {
-      toast.error("Erro ao conectar ao servidor.");
+      toast.error("Erro ao conectar ao servidor."); // Exibe o toast de erro
     }
   };
 
@@ -522,6 +522,7 @@ export default function Trainings() {
           </Dialog>
         )}
       </div>
+      <ToastContainer /> 
     </Layout>
   );
 }
