@@ -38,6 +38,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface Training {
   id: number;
@@ -53,11 +61,18 @@ interface Training {
   secao_id: number;
 }
 
+interface Categories {
+  id: number; 
+  nome: string; 
+  icone_id: string;
+  secao_nome: string; 
+  created_at: string; 
+  updated_at: string; 
+}
+
 export default function Trainings() {
   const [trainings, setTrainings] = useState<Training[]>([]);
-  const [categories, setCategories] = useState<
-    { id: number; titulo: string }[]
-  >([]);
+  const [categories, setCategories] = useState<Categories[]>([]);
   const [selectedTraining, setSelectedTraining] = useState<Training | null>(
     null
   );
@@ -104,10 +119,11 @@ export default function Trainings() {
             credentials: "include",
           }
         );
-
+  
         if (response.ok) {
           const result = await response.json();
-          setCategories(result.success || []);
+          setCategories(result.success || []); // Certifique-se de que "success" contém as categorias
+          console.log("Categorias carregadas:", result.success);
         } else {
           console.error("Erro ao carregar as categorias.");
         }
@@ -115,7 +131,7 @@ export default function Trainings() {
         console.error("Erro ao conectar ao servidor.", error);
       }
     };
-    console.log(categories);
+  
     fetchCategories();
   }, []);
 
@@ -323,11 +339,11 @@ export default function Trainings() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  Editar Treinamento {selectedTraining.titulo}
+                  Editar Treinamento
                 </DialogTitle>
               </DialogHeader>
               <div className="flex flex-col gap-4">
-                <label htmlFor="">Titulo</label>
+                <Label htmlFor="">Titulo</Label>
                 <input
                   type="text"
                   placeholder="Título"
@@ -340,7 +356,7 @@ export default function Trainings() {
                   }
                   className="border p-2 rounded"
                 />
-                <label htmlFor="">Descrição</label>
+                <Label htmlFor="">Descrição</Label>
                 <textarea
                   placeholder="Descrição"
                   value={selectedTraining.descricao}
@@ -352,7 +368,7 @@ export default function Trainings() {
                   }
                   className="border p-2 rounded"
                 />
-                <label htmlFor="">Nome do Arquivo</label>
+                <Label htmlFor="">Nome do Arquivo</Label>
                 <input
                   type="text"
                   placeholder="Nome do Arquivo"
@@ -365,36 +381,47 @@ export default function Trainings() {
                   }
                   className="border p-2 rounded"
                 />
-                <label htmlFor="">Arquivo</label>
+                <Label htmlFor="">Arquivo</Label>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                    {/* Estilização do input de arquivo */}
-                    <label
+                    <Label
                       htmlFor="file-upload"
                       className="cursor-pointer col-span-4 flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
                     >
                       Escolher Arquivo
                       <input id="file-upload" type="file" className="sr-only" />
-                    </label>
+                    </Label>
                   </div>
                 </div>
-                <select
-                  value={selectedTraining.categoria_id}
-                  onChange={(e) =>
-                    setSelectedTraining({
-                      ...selectedTraining,
-                      categoria_id: parseInt(e.target.value),
-                    })
-                  }
-                  className="border p-2 rounded"
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.titulo}
-                    </option>
-                  ))}
-                </select>
+                <Select
+  value={selectedTraining?.categoria_id?.toString()} // Certifique-se de que o valor seja uma string
+  onValueChange={(value) =>
+    setSelectedTraining({
+      ...selectedTraining!,
+      categoria_id: parseInt(value), // Atualiza o ID da categoria corretamente
+    })
+  }
+>
+  <Label htmlFor="">Categorias</Label>
+  <SelectTrigger className="border p-2 w-auto rounded">
+    <SelectValue placeholder="Selecione uma categoria" />
+  </SelectTrigger>
+  <SelectContent>
+  {categories.length > 0 ? (
+    categories.map((cat) => (
+      <SelectItem
+        key={cat.id}
+        value={cat.id.toString()}
+        className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
+      >
+        {cat.nome} {/* Exibe o nome da categoria */}
+      </SelectItem>
+    ))
+  ) : (
+    <p className="text-gray-500 px-4 py-2">Nenhuma categoria encontrada</p>
+  )}
+</SelectContent>
+</Select>
               </div>
               <DialogFooter>
                 <Button
