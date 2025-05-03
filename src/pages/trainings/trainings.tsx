@@ -62,6 +62,7 @@ export default function Trainings() {
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Estado para controlar o Dialog
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -140,9 +141,52 @@ export default function Trainings() {
     }
   };
 
+  const handleEdit = async () => {
+    if (!selectedTraining) return;
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/trainings/edit/${selectedTraining.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            categoria_id: selectedTraining.categoria_id,
+            titulo: selectedTraining.titulo,
+            descricao: selectedTraining.descricao,
+            arquivo_nome: selectedTraining.arquivo_nome,
+            arquivo_caminho: selectedTraining.arquivo_caminho,
+            tamanho: selectedTraining.tamanho,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Treinamento atualizado com sucesso!");
+        setTrainings((prev) =>
+          prev.map((t) => (t.id === selectedTraining.id ? selectedTraining : t))
+        );
+        setIsEditDialogOpen(false);
+        setSelectedTraining(null);
+      } else {
+        toast.error("Erro ao atualizar o treinamento.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar ao servidor.");
+    }
+  };
+
   return (
     <Layout>
-      <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Treinamentos", href: "/trainings" }]} />
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Treinamentos", href: "/trainings" },
+        ]}
+      />
       <h1 className="text-xl font-bold mt-5">Treinamentos</h1>
       <div className="flex flex-col gap-4">
         <div className="flex justify-end">
@@ -170,11 +214,19 @@ export default function Trainings() {
             {trainings.length > 0 ? (
               trainings.map((training) => (
                 <TableRow key={training.id}>
-                  <TableCell className="font-medium">{training.titulo}</TableCell>
-                  <TableCell className="font-medium">{training.categoria_nome}</TableCell>
+                  <TableCell className="font-medium">
+                    {training.titulo}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {training.categoria_nome}
+                  </TableCell>
                   <TableCell>{training.descricao}</TableCell>
-                  <TableCell>{new Date(training.created_at).toLocaleString()}</TableCell>
-                  <TableCell>{new Date(training.updated_at).toLocaleString()}</TableCell>
+                  <TableCell>
+                    {new Date(training.created_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(training.updated_at).toLocaleString()}
+                  </TableCell>
                   <TableCell>
                     <a
                       href={training.arquivo_caminho}
@@ -190,11 +242,15 @@ export default function Trainings() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <a href={`/edittraining/${training.id}`}>
-                              <div className="hover:bg-emerald-300 rounded-md p-2">
-                                <Pen color="blue" />
-                              </div>
-                            </a>
+                            <button
+                              className="hover:bg-yellow-300 rounded-md p-2"
+                              onClick={() => {
+                                setSelectedTraining(training);
+                                setIsEditDialogOpen(true);
+                              }}
+                            >
+                              <Pen color="orange" />
+                            </button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Editar</p>
@@ -220,9 +276,10 @@ export default function Trainings() {
                                   </AlertDialogTitle>
                                 </AlertDialogHeader>
                                 <p>
-                                  Tem certeza de que deseja excluir o treinamento{" "}
-                                  <strong>{selectedTraining?.titulo}</strong>? Essa ação não pode
-                                  ser desfeita.
+                                  Tem certeza de que deseja excluir o
+                                  treinamento{" "}
+                                  <strong>{selectedTraining?.titulo}</strong>?
+                                  Essa ação não pode ser desfeita.
                                 </p>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel className="cursor-pointer">
@@ -261,8 +318,105 @@ export default function Trainings() {
             )}
           </TableBody>
         </Table>
+        {selectedTraining && (
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  Editar Treinamento {selectedTraining.titulo}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-4">
+                <label htmlFor="">Titulo</label>
+                <input
+                  type="text"
+                  placeholder="Título"
+                  value={selectedTraining.titulo}
+                  onChange={(e) =>
+                    setSelectedTraining({
+                      ...selectedTraining,
+                      titulo: e.target.value,
+                    })
+                  }
+                  className="border p-2 rounded"
+                />
+                <label htmlFor="">Descrição</label>
+                <textarea
+                  placeholder="Descrição"
+                  value={selectedTraining.descricao}
+                  onChange={(e) =>
+                    setSelectedTraining({
+                      ...selectedTraining,
+                      descricao: e.target.value,
+                    })
+                  }
+                  className="border p-2 rounded"
+                />
+                <label htmlFor="">Nome do Arquivo</label>
+                <input
+                  type="text"
+                  placeholder="Nome do Arquivo"
+                  value={selectedTraining.arquivo_nome}
+                  onChange={(e) =>
+                    setSelectedTraining({
+                      ...selectedTraining,
+                      arquivo_nome: e.target.value,
+                    })
+                  }
+                  className="border p-2 rounded"
+                />
+                <label htmlFor="">Arquivo</label>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    {/* Estilização do input de arquivo */}
+                    <label
+                      htmlFor="file-upload"
+                      className="cursor-pointer col-span-4 flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                    >
+                      Escolher Arquivo
+                      <input id="file-upload" type="file" className="sr-only" />
+                    </label>
+                  </div>
+                </div>
+                <select
+                  value={selectedTraining.categoria_id}
+                  onChange={(e) =>
+                    setSelectedTraining({
+                      ...selectedTraining,
+                      categoria_id: parseInt(e.target.value),
+                    })
+                  }
+                  className="border p-2 rounded"
+                >
+                  <option value="">Selecione uma categoria</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.titulo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <DialogFooter>
+                <Button
+                  className="bg-gray-500 hover:bg-gray-600"
+                  onClick={() => {
+                    setSelectedTraining(null);
+                    setIsEditDialogOpen(false);
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  className="bg-blue-500 hover:bg-blue-600"
+                  onClick={handleEdit}
+                >
+                  Salvar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </Layout>
   );
 }
-
