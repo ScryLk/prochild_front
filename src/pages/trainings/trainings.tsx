@@ -187,6 +187,7 @@ export default function Trainings() {
         );
         setIsEditDialogOpen(false);
         setSelectedTraining(null);
+        
       } else {
         toast.error("Erro ao atualizar o treinamento.");
       }
@@ -277,13 +278,13 @@ export default function Trainings() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
-                              className="hover:bg-yellow-300 rounded-md p-2 cursor-pointer"
+                              className="hover:bg-blue-300 rounded-md p-2 cursor-pointer"
                               onClick={() => {
                                 setSelectedTraining(training);
                                 setIsEditDialogOpen(true);
                               }}
                             >
-                              <Pen color="orange" />
+                              <Pen color="blue" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>

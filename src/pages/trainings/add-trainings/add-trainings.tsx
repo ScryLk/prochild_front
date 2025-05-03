@@ -20,6 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export default function AddTraining() {
   const breadcrumbItems = [
@@ -27,6 +28,43 @@ export default function AddTraining() {
     { label: "Treinamentos", href: "/trainings" },
     { label: "Adicionar Treinamento", href: "/addtrainings" },
   ];
+
+  const [categories, setCategories] = useState<Categories[]>([]);
+
+  interface Categories {
+    id: number;
+    nome: string;
+    icone_id: string;
+    secao_nome: string;
+    created_at: string;
+    updated_at: string;
+  }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/categories/categories",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setCategories(result.success || []); // Certifique-se de que "success" contém as categorias
+          console.log("Categorias carregadas:", result.success);
+        } else {
+          console.error("Erro ao carregar as categorias.");
+        }
+      } catch (error) {
+        console.error("Erro ao conectar ao servidor.", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <Layout>
@@ -39,31 +77,25 @@ export default function AddTraining() {
           placeholder="Nome do treinamento"
           className="w-3/5"
         />
-        <label htmlFor="parent-category">Filha de</label>
+        <label htmlFor="parent-category">Categoria</label>
         <Select>
           <SelectTrigger
             id="parent-category"
-            className="w-[180px] cursor-pointer"
+            className="w-3/5 cursor-pointer"
           >
             <SelectValue placeholder="Categoria" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Cuidados Físicos</SelectLabel>
-              <SelectItem value="intoxicacao">Intoxicação</SelectItem>
-              <SelectItem value="viroses">Viroses</SelectItem>
-              <SelectItem value="diarreia">Diarreia</SelectItem>
-              <SelectItem value="queimaduras">Queimaduras</SelectItem>
-              <SelectItem value="fraturas">Fraturas</SelectItem>
-              <SelectItem value="engasgo">Engasgo</SelectItem>
-              <SelectItem value="paradas">Paradas</SelectItem>
-              <SelectItem value="batidas">Batidas</SelectItem>
-              <SelectItem value="cortes">Cortes</SelectItem>
-              <SelectItem value="lesoes">Lesões</SelectItem>
-              <SelectItem value="sangramentos">Sangramentos</SelectItem>
-              <SelectItem value="febre">Febre</SelectItem>
-              <SelectItem value="convulsoes">Convulsões</SelectItem>
-              <SelectItem value="respiratorios">Respiratórios</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem
+                  key={cat.id}
+                  value={cat.id.toString()}
+                  className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
+                >
+                  {cat.nome} {/* Exibe o nome da categoria */}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -88,11 +120,7 @@ export default function AddTraining() {
                   className="cursor-pointer col-span-4 flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
                 >
                   Escolher Arquivo
-                  <input
-                    id="file-upload"
-                    type="file"
-                    className="sr-only"
-                  />
+                  <input id="file-upload" type="file" className="sr-only" />
                 </label>
               </div>
             </div>
