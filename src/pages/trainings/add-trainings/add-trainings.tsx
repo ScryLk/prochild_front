@@ -34,8 +34,13 @@ export default function AddTraining() {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [trainingTitle, setTrainingTitle] = useState<string>("");
   const [trainingDescription, setTrainingDescription] = useState<string>("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
   const [filePath, setFilePath] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileSize, setFileSize] = useState<string | null>(null);
 
   interface Categories {
     id: number;
@@ -47,29 +52,30 @@ export default function AddTraining() {
   }
 
   const handleSaveTraining = async () => {
-    if (!selectedCategoryId || !trainingTitle || !trainingDescription) {
+    if (
+      !selectedCategoryId ||
+      !trainingTitle ||
+      !trainingDescription ||
+      !selectedFile
+    ) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-  
-    const requestBody = {
-      categoria_id: selectedCategoryId,
-      titulo: trainingTitle,
-      tamanho: "N/A", // Ajuste conforme necessário
-      descricao: trainingDescription,
-      arquivo_nome: selectedFileName || "N/A",
-      arquivo_caminho: filePath || "N/A",
-    };
-  
+
+    const formData = new FormData();
+    formData.append("categoria_id", selectedCategoryId);
+    formData.append("titulo", trainingTitle);
+    formData.append("tamanho", fileSize || "0 KB"); // Inclui o tamanho do arquivo
+    formData.append("descricao", trainingDescription);
+    formData.append("arquivo_nome", selectedFile.name);
+    formData.append("arquivo_caminho", selectedFile); // Envia o arquivo
+
     try {
       const response = await fetch("http://127.0.0.1:8000/trainings/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
+        body: formData,
       });
-  
+
       if (response.ok) {
         alert("Treinamento cadastrado com sucesso!");
         // Redirecione ou limpe os campos do formulário, se necessário
@@ -110,115 +116,124 @@ export default function AddTraining() {
 
   return (
     <Layout>
-  <div className="flex flex-col gap-4">
-    <Breadcrumb items={breadcrumbItems} />
-    <h1 className="text-xl font-bold">Adicionar Treinamento</h1>
+      <div className="flex flex-col gap-4">
+        <Breadcrumb items={breadcrumbItems} />
+        <h1 className="text-xl font-bold">Adicionar Treinamento</h1>
 
-    <label htmlFor="training-title">Nome do Treinamento</label>
-    <Input
-      id="training-title"
-      placeholder="Nome do treinamento"
-      className="w-3/5"
-      value={trainingTitle}
-      onChange={(e) => setTrainingTitle(e.target.value)}
-    />
+        <label htmlFor="training-title">Nome do Treinamento</label>
+        <Input
+          id="training-title"
+          placeholder="Nome do treinamento"
+          className="w-3/5"
+          value={trainingTitle}
+          onChange={(e) => setTrainingTitle(e.target.value)}
+        />
 
-    <label htmlFor="parent-category">Categoria</label>
-    <Select
-      onValueChange={(value) => setSelectedCategoryId(value)}
-    >
-      <SelectTrigger id="parent-category" className="w-3/5 cursor-pointer">
-        <SelectValue placeholder="Categoria" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          {categories.map((cat) => (
-            <SelectItem
-              key={cat.id}
-              value={cat.id.toString()}
-              className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
-            >
-              {cat.nome}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+        <label htmlFor="parent-category">Categoria</label>
+        <Select onValueChange={(value) => setSelectedCategoryId(value)}>
+          <SelectTrigger id="parent-category" className="w-3/5 cursor-pointer">
+            <SelectValue placeholder="Categoria" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {categories.map((cat) => (
+                <SelectItem
+                  key={cat.id}
+                  value={cat.id.toString()}
+                  className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
+                >
+                  {cat.nome}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-    <label htmlFor="training-description">Descrição</label>
-    <textarea
-      id="training-description"
-      placeholder="Descrição do treinamento"
-      className="w-3/5 border p-2 rounded"
-      value={trainingDescription}
-      onChange={(e) => setTrainingDescription(e.target.value)}
-    />
+        <label htmlFor="training-description">Descrição</label>
+        <textarea
+          id="training-description"
+          placeholder="Descrição do treinamento"
+          className="w-3/5 border p-2 rounded"
+          value={trainingDescription}
+          onChange={(e) => setTrainingDescription(e.target.value)}
+        />
 
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="w-3/5 cursor-pointer">
-          {selectedFileName ? selectedFileName : "Adicionar Arquivo"}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Adicionar Arquivo</DialogTitle>
-          <DialogDescription>
-            Adicionar treinamento, apenas formatos PDF, PNG e MP4 aceitos
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <label
-              htmlFor="file-upload"
-              className="cursor-pointer col-span-4 flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-            >
-              Escolher Arquivo
-              <input
-                id="file-upload"
-                type="file"
-                className="sr-only"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setSelectedFileName(file.name);
-                    setFilePath(file.name); // Simula o caminho do arquivo
-                  } else {
-                    setSelectedFileName(null);
-                    setFilePath(null);
-                  }
-                }}
-              />
-            </label>
-          </div>
-          {selectedFileName && (
-            <Label className="text-sm text-gray-600">
-              <File /> {selectedFileName}
-            </Label>
-          )}
-        </div>
-        <DialogFooter>
-          <Button type="button" className="cursor-pointer">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-3/5 cursor-pointer">
+              {selectedFileName ? selectedFileName : "Adicionar Arquivo"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Adicionar Arquivo</DialogTitle>
+              <DialogDescription>
+                Adicionar treinamento, apenas formatos PDF, PNG e MP4 aceitos
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer col-span-4 flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                >
+                  Escolher Arquivo
+                  <input
+                    id="file-upload"
+                    type="file"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSelectedFile(file); // Armazena o arquivo no estado
+                        setSelectedFileName(file.name); // Define o nome do arquivo
+                        setFileSize((file.size / 1024).toFixed(2) + " KB"); // Calcula o tamanho em KB
+                      } else {
+                        setSelectedFile(null);
+                        setSelectedFileName(null);
+                        setFileSize(null);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              {selectedFileName && (
+                <Label className="text-sm text-gray-600">
+                  <File /> {selectedFileName}
+                </Label>
+              )}
+              {fileSize && (
+                <Label className="text-sm text-gray-600">
+                  Tamanho do arquivo: {fileSize}
+                </Label>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                className="cursor-pointer"
+                onClick={() => setIsDialogOpen(false)} // Fecha o modal ao salvar
+              >
+                Salvar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <div className="flex gap-3">
+          <Button
+            className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
+            onClick={handleSaveTraining}
+          >
             Salvar
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-
-    <div className="flex gap-3">
-      <Button
-        className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
-        onClick={handleSaveTraining}
-      >
-        Salvar
-      </Button>
-      <a href="/">
-        <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
-          Cancelar
-        </Button>
-      </a>
-    </div>
-  </div>
-</Layout>
+          <a href="/">
+            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
+              Cancelar
+            </Button>
+          </a>
+        </div>
+      </div>
+    </Layout>
   );
 }
