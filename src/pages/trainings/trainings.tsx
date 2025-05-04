@@ -159,7 +159,7 @@ export default function Trainings() {
 
   const handleEdit = async () => {
     if (!selectedTraining) return;
-
+  
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/trainings/edit/${selectedTraining.id}`,
@@ -179,7 +179,7 @@ export default function Trainings() {
           }),
         }
       );
-
+  
       if (response.ok) {
         toast.success("Treinamento atualizado com sucesso!");
         setTrainings((prev) =>
@@ -236,16 +236,18 @@ export default function Trainings() {
                   <TableCell className="font-medium">
                     {training.categoria_nome}
                   </TableCell>
-                  <TableCell>{training.descricao}</TableCell>
+                  <TableCell>
+                    {training.descricao.length > 50
+                      ? `${training.descricao.slice(0, 50)}...`
+                      : training.descricao}
+                  </TableCell>
                   <TableCell>
                     {new Date(training.created_at).toLocaleString()}
                   </TableCell>
                   <TableCell>
                     {new Date(training.updated_at).toLocaleString()}
                   </TableCell>
-                  <TableCell>
-                      {training.arquivo_nome}
-                  </TableCell>
+                  <TableCell>{training.arquivo_nome}</TableCell>
                   <TableCell className="flex items-center gap-2">
                     <div className="flex gap-5 items-center justify-center">
                       <TooltipProvider>
@@ -467,7 +469,7 @@ export default function Trainings() {
                 </p>
 
                 <Label htmlFor="">Descrição</Label>
-                <p className="border p-2 rounded bg-gray-100">
+                <p className="border p-2 rounded h-32 bg-gray-100 overflow-auto">
                   {selectedTraining.descricao}
                 </p>
 

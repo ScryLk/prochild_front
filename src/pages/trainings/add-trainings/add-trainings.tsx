@@ -22,6 +22,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { File } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddTraining() {
   const breadcrumbItems = [
@@ -77,7 +79,8 @@ export default function AddTraining() {
       });
 
       if (response.ok) {
-        alert("Treinamento cadastrado com sucesso!");
+        toast.success("Treinamento Cadastrado com sucesso")
+        window.location.href = "/trainings";
         // Redirecione ou limpe os campos do formulário, se necessário
       } else {
         alert("Erro ao cadastrar o treinamento.");
@@ -234,6 +237,7 @@ export default function AddTraining() {
           </a>
         </div>
       </div>
+      <ToastContainer />
     </Layout>
   );
 }
