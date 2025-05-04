@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Breadcrumb } from "@/components/app-breadcrumb/app-breadcrumb";
-import { Pen, Trash, Eye } from "lucide-react";
+import { Pen, Trash, Eye, Download } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -187,7 +187,6 @@ export default function Trainings() {
         );
         setIsEditDialogOpen(false);
         setSelectedTraining(null);
-        
       } else {
         toast.error("Erro ao atualizar o treinamento.");
       }
@@ -245,14 +244,7 @@ export default function Trainings() {
                     {new Date(training.updated_at).toLocaleString()}
                   </TableCell>
                   <TableCell>
-                    <a
-                      href={training.arquivo_caminho}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
                       {training.arquivo_nome}
-                    </a>
                   </TableCell>
                   <TableCell className="flex items-center gap-2">
                     <div className="flex gap-5 items-center justify-center">
@@ -263,7 +255,7 @@ export default function Trainings() {
                               className="hover:bg-gray-300 rounded-md p-2 cursor-pointer"
                               onClick={() => {
                                 setSelectedTraining(training);
-                                setIsDialogOpen(true); 
+                                setIsDialogOpen(true);
                               }}
                             >
                               <Eye color="gray" />
@@ -485,14 +477,23 @@ export default function Trainings() {
                 </p>
 
                 <Label htmlFor="">Arquivo</Label>
-                <a
-                  href={selectedTraining.arquivo_caminho}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  {selectedTraining.arquivo_nome}
-                </a>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={selectedTraining.arquivo_caminho}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    {selectedTraining.arquivo_nome}
+                  </a>
+                  <a
+                    href={selectedTraining.arquivo_caminho}
+                    download={selectedTraining.arquivo_nome} // Adiciona o atributo download
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <Download />
+                  </a>
+                </div>
 
                 <Label htmlFor="">Categoria</Label>
                 <p className="border p-2 rounded bg-gray-100">
@@ -523,7 +524,7 @@ export default function Trainings() {
           </Dialog>
         )}
       </div>
-      <ToastContainer /> 
+      <ToastContainer />
     </Layout>
   );
 }
