@@ -26,7 +26,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -76,13 +75,9 @@ export default function Trainings() {
   const [selectedTraining, setSelectedTraining] = useState<Training | null>(
     null
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // Estado para controlar o Dialog
+  const [isDialogOpen, setIsDialogOpen] = useState(false); 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Treinamentos", href: "/trainings" },
-  ];
 
   useEffect(() => {
     const fetchTrainings = async () => {
@@ -122,7 +117,7 @@ export default function Trainings() {
 
         if (response.ok) {
           const result = await response.json();
-          setCategories(result.success || []); // Certifique-se de que "success" contém as categorias
+          setCategories(result.success || []); 
           console.log("Categorias carregadas:", result.success);
         } else {
           console.error("Erro ao carregar as categorias.");
@@ -141,19 +136,19 @@ export default function Trainings() {
         `http://127.0.0.1:8000/trainings/delete/${trainingId}`,
         {
           method: "DELETE",
-          credentials: "include", // Inclui cookies automaticamente
+          credentials: "include", 
         }
       );
       if (response.ok) {
         setTrainings((prev) =>
           prev.filter((training) => training.id !== trainingId)
         );
-        toast.success("Treinamento deletado com sucesso!"); // Exibe o toast de sucesso
+        toast.success("Treinamento deletado com sucesso!"); 
       } else {
-        toast.error("Erro ao excluir o treinamento."); // Exibe o toast de erro
+        toast.error("Erro ao excluir o treinamento."); 
       }
     } catch (error) {
-      toast.error("Erro ao conectar ao servidor."); // Exibe o toast de erro
+      toast.error("Erro ao conectar ao servidor."); 
     }
   };
 
@@ -405,11 +400,11 @@ export default function Trainings() {
                   </div>
                 </div>
                 <Select
-                  value={selectedTraining?.categoria_id?.toString()} // Certifique-se de que o valor seja uma string
+                  value={selectedTraining?.categoria_id?.toString()}
                   onValueChange={(value) =>
                     setSelectedTraining({
                       ...selectedTraining!,
-                      categoria_id: parseInt(value), // Atualiza o ID da categoria corretamente
+                      categoria_id: parseInt(value),
                     })
                   }
                 >
@@ -425,7 +420,7 @@ export default function Trainings() {
                           value={cat.id.toString()}
                           className="cursor-pointer w-auto hover:bg-gray-100 hover:text-gray-800 rounded-md"
                         >
-                          {cat.nome} {/* Exibe o nome da categoria */}
+                          {cat.nome}
                         </SelectItem>
                       ))
                     ) : (
@@ -490,7 +485,7 @@ export default function Trainings() {
                   </a>
                   <a
                     href={selectedTraining.arquivo_caminho}
-                    download={selectedTraining.arquivo_nome} // Adiciona o atributo download
+                    download={selectedTraining.arquivo_nome} 
                     className="text-blue-500 hover:text-blue-700"
                   >
                     <Download />

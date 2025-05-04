@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import {
   Home,
   Search,
-  ListOrdered,
   LayoutGrid,
   Book,
   Heart,
@@ -70,16 +69,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface Category {
-  id: number;
-  nome: string;
-  treinamentos_cadastrados: number;
-  secao_nome: string;
-  icone_id: string;
-  created_at: Date;
-  updated_at: Date;
-}
-
 const icons = [
   { id: "Home", icon: <Home /> },
   { id: "Search", icon: <Search /> },
@@ -107,16 +96,14 @@ export default function Categories() {
   const [editNome, setEditNome] = useState<string>("");
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [editIcon, setEditIcon] = useState<string>("");
-  const [editSecao, setEditSecao] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null); // Ícone atualmente selecionado
   const [sections, setSections] = useState<Section[]>([]);
   const [editSection, setEditSection] = useState<number | null>(null);
-  const [trainings, setTrainings] = useState<Training[]>([]); // Estado para armazenar os treinamentos
+  const [trainings, setTrainings] = useState<Training[]>([]); 
   const [trainingsDialogOpen, setTrainingsDialogOpen] =
-    useState<boolean>(false); // Controle do diálogo de treinamentos
+    useState<boolean>(false); 
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -128,7 +115,7 @@ export default function Categories() {
     nome: string;
     treinamentos_cadastrados: number;
     secao_nome: string;
-    secao_id: number; // Adicionado para corrigir o erro
+    secao_id: number;
     icone_id: string;
     created_at: Date;
     updated_at: Date;
@@ -161,7 +148,7 @@ export default function Categories() {
         );
         if (response.ok) {
           const result = await response.json();
-          setSections(result.Sucesso || []); // Acessa o campo "Sucesso" corretamente
+          setSections(result.Sucesso || []); 
         } else {
           toast.error("Erro ao carregar as seções.");
         }
@@ -219,21 +206,13 @@ export default function Categories() {
     }
   };
 
-  const handleEditClick = (category: Category) => {
-    setSelectedCategory(category);
-    setEditNome(category.nome);
-    setEditSection(category.secao_id); // Configura o ID da seção vinculada
-    setEditIcon(category.icone_id);
-    setEditOpen(true); // Abre o diálogo de edição
-  };
-
   const handleListTraining = async (categoryId: number) => {
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/trainings/trainings/categorie/${categoryId}`,
         {
           method: "GET",
-          credentials: "include", // Inclui cookies automaticamente
+          credentials: "include", 
         }
       );
 
@@ -266,11 +245,11 @@ export default function Categories() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include", // Inclui cookies automaticamente
+          credentials: "include", 
           body: JSON.stringify({
-            secao_id: editSection, // ID da seção selecionada
-            nome: editNome, // Nome da categoria
-            icone_svg: editIcon, // Ícone selecionado
+            secao_id: editSection, 
+            nome: editNome,
+            icone_svg: editIcon,
           }),
         }
       );
@@ -358,11 +337,11 @@ export default function Categories() {
                           <button
                             className="hover:bg-emerald-300 cursor-pointer rounded-md p-2"
                             onClick={() => {
-                              setEditNome(category.nome); // Define o nome da categoria
-                              setEditIcon(category.icone_id); // Define o ícone da categoria
-                              setEditSection(category.secao_id); // Define o ID da seção vinculada
-                              setSelectedCategory(category); // Define a categoria selecionada
-                              setEditOpen(true); // Abre o diálogo de edição
+                              setEditNome(category.nome);
+                              setEditIcon(category.icone_id); 
+                              setEditSection(category.secao_id); 
+                              setSelectedCategory(category); 
+                              setEditOpen(true); 
                             }}
                           >
                             <Pen color="blue" />
@@ -426,7 +405,7 @@ export default function Categories() {
                         <TooltipTrigger asChild>
                           <button
                             className="hover:bg-gray-300 cursor-pointer rounded-md p-2"
-                            onClick={() => handleListTraining(category.id)} // Passa o ID da categoria
+                            onClick={() => handleListTraining(category.id)} 
                           >
                             <Library color="black" />
                           </button>
@@ -462,8 +441,8 @@ export default function Categories() {
 
             <Label htmlFor="edit-secao">Seção</Label>
             <Select
-              value={editSection?.toString()} // Define o valor inicial como o ID da seção vinculada
-              onValueChange={(value) => setEditSection(Number(value))} // Atualiza o estado ao selecionar uma nova seção
+              value={editSection?.toString()} 
+              onValueChange={(value) => setEditSection(Number(value))} 
             >
               <SelectTrigger id="edit-secao" className="w-auto">
                 <SelectValue placeholder="Selecione uma seção" />
@@ -477,7 +456,7 @@ export default function Categories() {
                       value={section.id.toString()}
                       className="cursor-pointer hover:bg-gray-100 hover:text-black rounded-md"
                     >
-                      {section.nome} {/* Exibe o nome da seção */}
+                      {section.nome} 
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -491,8 +470,8 @@ export default function Categories() {
                   <button
                     key={icon.id}
                     onClick={() => {
-                      setEditIcon(icon.id); // Atualiza o estado
-                      console.log(icon.id); // Exibe o ID do ícone selecionado no console
+                      setEditIcon(icon.id); 
+                      console.log(icon.id);
                     }}
                     className={`p-4 border cursor-pointer rounded-md flex flex-col items-center justify-center ${
                       editIcon === icon.id
@@ -566,9 +545,8 @@ export default function Categories() {
                         href={training.arquivo_caminho}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
                       >
-                        Baixar Arquivo
+                        {training.arquivo_nome}
                       </a>
                     </TableCell>
                   </TableRow>

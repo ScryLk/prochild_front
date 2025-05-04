@@ -39,7 +39,6 @@ export default function AddTraining() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
-  const [filePath, setFilePath] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileSize, setFileSize] = useState<string | null>(null);
@@ -67,10 +66,10 @@ export default function AddTraining() {
     const formData = new FormData();
     formData.append("categoria_id", selectedCategoryId);
     formData.append("titulo", trainingTitle);
-    formData.append("tamanho", fileSize || "0 KB"); // Inclui o tamanho do arquivo
+    formData.append("tamanho", fileSize || "0 KB"); 
     formData.append("descricao", trainingDescription);
     formData.append("arquivo_nome", selectedFile.name);
-    formData.append("arquivo_caminho", selectedFile); // Envia o arquivo
+    formData.append("arquivo_caminho", selectedFile); 
 
     try {
       const response = await fetch("http://127.0.0.1:8000/trainings/", {
@@ -81,7 +80,6 @@ export default function AddTraining() {
       if (response.ok) {
         toast.success("Treinamento Cadastrado com sucesso")
         window.location.href = "/trainings";
-        // Redirecione ou limpe os campos do formulário, se necessário
       } else {
         alert("Erro ao cadastrar o treinamento.");
       }
@@ -104,7 +102,7 @@ export default function AddTraining() {
 
         if (response.ok) {
           const result = await response.json();
-          setCategories(result.success || []); // Certifique-se de que "success" contém as categorias
+          setCategories(result.success || []); 
           console.log("Categorias carregadas:", result.success);
         } else {
           console.error("Erro ao carregar as categorias.");
@@ -188,9 +186,9 @@ export default function AddTraining() {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        setSelectedFile(file); // Armazena o arquivo no estado
-                        setSelectedFileName(file.name); // Define o nome do arquivo
-                        setFileSize((file.size / 1024).toFixed(2) + " KB"); // Calcula o tamanho em KB
+                        setSelectedFile(file);
+                        setSelectedFileName(file.name); 
+                        setFileSize((file.size / 1024).toFixed(2) + " KB");
                       } else {
                         setSelectedFile(null);
                         setSelectedFileName(null);
@@ -215,7 +213,7 @@ export default function AddTraining() {
               <Button
                 type="button"
                 className="cursor-pointer"
-                onClick={() => setIsDialogOpen(false)} // Fecha o modal ao salvar
+                onClick={() => setIsDialogOpen(false)} 
               >
                 Salvar
               </Button>
