@@ -101,9 +101,10 @@ export default function Categories() {
   );
   const [sections, setSections] = useState<Section[]>([]);
   const [editSection, setEditSection] = useState<number | null>(null);
-  const [trainings, setTrainings] = useState<Training[]>([]); 
+  const [trainings, setTrainings] = useState<Training[]>([]);
   const [trainingsDialogOpen, setTrainingsDialogOpen] =
-    useState<boolean>(false); 
+    useState<boolean>(false);
+    
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -117,6 +118,7 @@ export default function Categories() {
     secao_nome: string;
     secao_id: number;
     icone_id: string;
+    cor: string;
     created_at: Date;
     updated_at: Date;
   }
@@ -148,7 +150,7 @@ export default function Categories() {
         );
         if (response.ok) {
           const result = await response.json();
-          setSections(result.Sucesso || []); 
+          setSections(result.Sucesso || []);
         } else {
           toast.error("Erro ao carregar as seções.");
         }
@@ -212,7 +214,7 @@ export default function Categories() {
         `http://127.0.0.1:8000/trainings/trainings/categorie/${categoryId}`,
         {
           method: "GET",
-          credentials: "include", 
+          credentials: "include",
         }
       );
 
@@ -245,9 +247,9 @@ export default function Categories() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include", 
+          credentials: "include",
           body: JSON.stringify({
-            secao_id: editSection, 
+            secao_id: editSection,
             nome: editNome,
             icone_svg: editIcon,
           }),
@@ -303,6 +305,7 @@ export default function Categories() {
             <TableRow>
               <TableHead className="w-[100px]">Categoria</TableHead>
               <TableHead>Ícone</TableHead>
+              <TableHead>Cor</TableHead>
               <TableHead>Seção</TableHead>
               <TableHead>Criado em</TableHead>
               <TableHead>Atualizado em</TableHead>
@@ -322,6 +325,13 @@ export default function Categories() {
                     )}
                   </Suspense>
                 </TableCell>
+                <TableCell>
+                  <div
+                    className="w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: category.cor }}
+                    title={category.cor} // Exibe o código hexadecimal ao passar o mouse
+                  ></div>
+                </TableCell>
                 <TableCell>{category.secao_nome}</TableCell>
                 <TableCell>
                   {new Date(category.created_at).toLocaleString()}
@@ -338,10 +348,10 @@ export default function Categories() {
                             className="hover:bg-emerald-300 cursor-pointer rounded-md p-2"
                             onClick={() => {
                               setEditNome(category.nome);
-                              setEditIcon(category.icone_id); 
-                              setEditSection(category.secao_id); 
-                              setSelectedCategory(category); 
-                              setEditOpen(true); 
+                              setEditIcon(category.icone_id);
+                              setEditSection(category.secao_id);
+                              setSelectedCategory(category);
+                              setEditOpen(true);
                             }}
                           >
                             <Pen color="blue" />
@@ -405,7 +415,7 @@ export default function Categories() {
                         <TooltipTrigger asChild>
                           <button
                             className="hover:bg-gray-300 cursor-pointer rounded-md p-2"
-                            onClick={() => handleListTraining(category.id)} 
+                            onClick={() => handleListTraining(category.id)}
                           >
                             <Library color="black" />
                           </button>
@@ -441,8 +451,8 @@ export default function Categories() {
 
             <Label htmlFor="edit-secao">Seção</Label>
             <Select
-              value={editSection?.toString()} 
-              onValueChange={(value) => setEditSection(Number(value))} 
+              value={editSection?.toString()}
+              onValueChange={(value) => setEditSection(Number(value))}
             >
               <SelectTrigger id="edit-secao" className="w-auto">
                 <SelectValue placeholder="Selecione uma seção" />
@@ -456,7 +466,7 @@ export default function Categories() {
                       value={section.id.toString()}
                       className="cursor-pointer hover:bg-gray-100 hover:text-black rounded-md"
                     >
-                      {section.nome} 
+                      {section.nome}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -470,7 +480,7 @@ export default function Categories() {
                   <button
                     key={icon.id}
                     onClick={() => {
-                      setEditIcon(icon.id); 
+                      setEditIcon(icon.id);
                       console.log(icon.id);
                     }}
                     className={`p-4 border cursor-pointer rounded-md flex flex-col items-center justify-center ${
