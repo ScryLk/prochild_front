@@ -68,6 +68,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SketchPicker, ColorResult } from "react-color";
 
 const icons = [
   { id: "Home", icon: <Home /> },
@@ -104,7 +105,8 @@ export default function Categories() {
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [trainingsDialogOpen, setTrainingsDialogOpen] =
     useState<boolean>(false);
-    
+  const [editColor, setEditColor] = useState<string>("#ffffff");
+  const [editColorOpen, setEditColorOpen] = useState<boolean>(false);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -251,7 +253,8 @@ export default function Categories() {
           body: JSON.stringify({
             secao_id: editSection,
             nome: editNome,
-            icone_svg: editIcon,
+            icone_id: editIcon,
+            cor: editColor, // Inclui a cor selecionada
           }),
         }
       );
@@ -265,6 +268,7 @@ export default function Categories() {
                   nome: editNome,
                   secao_id: editSection,
                   icone_id: editIcon,
+                  cor: editColor, // Atualiza a cor na lista
                 }
               : category
           )
@@ -448,6 +452,52 @@ export default function Categories() {
               value={editNome}
               onChange={(e) => setEditNome(e.target.value)}
             />
+            <Label htmlFor="edit-color">Cor</Label>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-full border"
+                style={{ backgroundColor: editColor }}
+              ></div>
+              <Button
+                variant="outline"
+                onClick={() => setEditColorOpen(true)} // Abre o modal de edição de cor
+              >
+                Escolher Cor
+              </Button>
+            </div>
+            
+            <Dialog open={editColorOpen} onOpenChange={setEditColorOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Editar Cor</DialogTitle>
+                  <DialogDescription>
+                    Escolha uma nova cor para a categoria.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <SketchPicker
+                    color={editColor}
+                    onChangeComplete={(color: ColorResult) =>
+                      setEditColor(color.hex)
+                    }
+                  />
+                </div>
+                <DialogFooter>
+                  <Button
+                    className="bg-gray-500 hover:bg-gray-600"
+                    onClick={() => setEditColorOpen(false)} // Fecha o modal sem salvar
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    className="bg-emerald-500 hover:bg-emerald-600"
+                    onClick={() => setEditColorOpen(false)} // Fecha o modal e mantém a cor selecionada
+                  >
+                    Salvar Cor
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <Label htmlFor="edit-secao">Seção</Label>
             <Select
