@@ -42,6 +42,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { JSX } from "react";
+import { SketchPicker, ColorResult } from "react-color";
 
 interface Section {
   id: number;
@@ -49,13 +50,16 @@ interface Section {
 }
 
 export default function AddCategories() {
-  const [sections, setSections] = useState<Section[]>([]); // Estado para armazenar as seções
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null); // Ícone atualmente selecionado
-  const [savedIcon, setSavedIcon] = useState<string | null>(null); // Ícone salvo após clicar em "Salvar Ícone"
-  const [savedIconComponent, setSavedIconComponent] = useState<JSX.Element | null>(null); // Componente do ícone salvo
-  const [categoryName, setCategoryName] = useState<string>(""); // Nome da categoria
-  const [selectedSection, setSelectedSection] = useState<string | null>(null); // Seção selecionada
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // Estado para controlar a visibilidade do Dialog
+  const [sections, setSections] = useState<Section[]>([]);
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const [savedIcon, setSavedIcon] = useState<string | null>(null);
+  const [savedIconComponent, setSavedIconComponent] =
+    useState<JSX.Element | null>(null);
+  const [categoryName, setCategoryName] = useState<string>("");
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [categoryColor, setCategoryColor] = useState<string>("#ffffff");
+  const [isColorPickerDialogOpen, setIsColorPickerDialogOpen] = useState(false);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -85,10 +89,13 @@ export default function AddCategories() {
   useEffect(() => {
     const fetchSections = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/sections/sections/", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://127.0.0.1:8000/sections/sections/",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (response.ok) {
           const result = await response.json();
@@ -114,7 +121,7 @@ export default function AddCategories() {
   };
 
   const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   const handleAddCategory = async () => {
@@ -125,9 +132,10 @@ export default function AddCategories() {
   
     try {
       const raw = JSON.stringify({
-        secao_id: selectedSection,
-        nome: categoryName, 
-        icone_id: savedIcon, 
+        secao_id: selectedSection, // ID da seção
+        nome: categoryName, // Nome da categoria
+        cor: categoryColor, // Cor selecionada no formato hexadecimal
+        icone_id: savedIcon, // ID do ícone selecionado
       });
   
       const requestOptions: RequestInit = {
@@ -136,22 +144,25 @@ export default function AddCategories() {
           "Content-Type": "application/json",
         },
         body: raw,
-        credentials: "include",
+        credentials: "include", // Inclui cookies na requisição
       };
   
-      const response = await fetch("http://127.0.0.1:8000/categories/", requestOptions);
+      const response = await fetch(
+        "http://127.0.0.1:8000/categories/",
+        requestOptions
+      );
   
       if (response.ok) {
-        toast.success("Categoria adicionada com sucesso!"); // Exibe o toast de sucesso
+        toast.success("Categoria adicionada com sucesso!");
         setTimeout(() => {
-          window.location.href = "/categories"; // Redireciona após 2 segundos
+          window.location.href = "/categories";
         }, 2000);
       } else {
-        toast.error("Erro ao adicionar a categoria."); // Exibe o toast de erro
+        toast.error("Erro ao adicionar a categoria.");
       }
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
-      toast.error("Erro ao conectar ao servidor."); // Exibe o toast de erro
+      toast.error("Erro ao conectar ao servidor.");
     }
   };
 
@@ -186,10 +197,59 @@ export default function AddCategories() {
             </SelectGroup>
           </SelectContent>
         </Select>
+        <label htmlFor="category-color">Cor da Categoria</label>
+        <Dialog
+          open={isColorPickerDialogOpen}
+          onOpenChange={setIsColorPickerDialogOpen}
+        >
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-3/5 cursor-pointer flex items-center gap-2"
+            >
+              <div
+                className="w-6 h-6 rounded-full border"
+                style={{ backgroundColor: categoryColor }}
+              ></div>
+              {categoryColor ? categoryColor : "Escolher Cor"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="w-[500px] sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Escolher Cor</DialogTitle>
+              <DialogDescription>
+                Escolha uma cor para identificar a categoria.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-4">
+              <SketchPicker
+                color={categoryColor}
+                onChangeComplete={(color: ColorResult) =>
+                  setCategoryColor(color.hex)
+                }
+                className="shadow-md"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                onClick={() => setIsColorPickerDialogOpen(false)} // Fecha o Dialog ao salvar
+                className="cursor-pointer"
+              >
+                Salvar Cor
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="w-3/5 cursor-pointer flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="w-3/5 cursor-pointer flex items-center gap-2"
+            >
               {savedIconComponent ? (
                 <>
                   {savedIconComponent}
@@ -220,7 +280,7 @@ export default function AddCategories() {
                         : "border-gray-300"
                     }`}
                   >
-                    <div className="text-2xl">{icon.icon}</div>       
+                    <div className="text-2xl">{icon.icon}</div>
                   </button>
                 ))}
               </div>

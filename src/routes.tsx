@@ -3,8 +3,8 @@ import Home from "@/pages/home/home";
 import SearchBar from "@/pages/search/searchbar";
 import Trainings from "@/pages/trainings/trainings";
 import AddTraining from "@/pages/trainings/add-trainings/add-trainings";
-import Sections from "@/pages/sections/sections";
-import AddSections from "@/pages/sections/add-sections/add-sections";
+import Sections from "@/pages/home/sections/sections";
+import AddSections from "@/pages/home/sections/add-sections/add-sections";
 import Categories from "@/pages/categories/categories";
 import AddCategories from "@/pages/categories/add-categories/add-categories";
 import Login from "./pages/login/login";
@@ -45,7 +45,8 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
-  }
+  },
+
 ]);
 
 export default router;

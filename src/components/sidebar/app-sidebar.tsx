@@ -5,6 +5,7 @@ import {
   LayoutGrid,
   Book,
   ChevronUp,
+  User,
 } from "lucide-react";
 
 import { useLocation } from "react-router-dom";
@@ -29,7 +30,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-// Menu items.
 const items = [
   {
     title: "Página Inicial",
@@ -56,6 +56,11 @@ const items = [
     url: "/trainings",
     icon: Book,
   },
+  {
+    title: "Usuários",
+    url: "/users",
+    icon: User
+  }
 ];
 
 export function AppSidebar() {
@@ -103,7 +108,6 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent className="bg-stone-100 flex flex-col-reverse md:flex-col">
-        {/* Footer com os ícones no modo responsivo */}
         <SidebarFooter className="md:hidden fixed bottom-0 w-full bg-gray-200 p-2 flex justify-around">
           {items.map((item) => (
             <a
@@ -120,8 +124,6 @@ export function AppSidebar() {
             </a>
           ))}
         </SidebarFooter>
-
-        {/* Conteúdo principal da Sidebar (visível em telas maiores) */}
         <div className="hidden md:block">
           <SidebarGroup>
             <div className="flex items-center justify-center h-16">
@@ -155,8 +157,6 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         </div>
-
-        {/* Footer com DropdownMenu */}
         <SidebarFooter className="hidden md:block mt-auto p-4 border-t border-gray-300">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
