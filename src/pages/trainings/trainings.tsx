@@ -214,7 +214,6 @@ export default function Trainings() {
             <TableRow>
               <TableHead className="w-1/6">Título</TableHead>
               <TableHead className="w-1/6">Categoria</TableHead>
-              <TableHead className="w-1/6">Descrição</TableHead>
               <TableHead className="w-1/6">Criado em</TableHead>
               <TableHead className="w-1/6">Atualizado em</TableHead>
               <TableHead className="w-1/6">Arquivo</TableHead>
@@ -231,11 +230,7 @@ export default function Trainings() {
                   <TableCell className="font-medium">
                     {training.categoria_nome}
                   </TableCell>
-                  <TableCell>
-                    {training.descricao.length > 50
-                      ? `${training.descricao.slice(0, 50)}...`
-                      : training.descricao}
-                  </TableCell>
+                  
                   <TableCell>
                     {new Date(training.created_at).toLocaleString()}
                   </TableCell>
