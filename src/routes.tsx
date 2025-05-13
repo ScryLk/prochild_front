@@ -9,6 +9,7 @@ import Categories from "@/pages/categories/categories";
 import AddCategories from "@/pages/categories/add-categories/add-categories";
 import Login from "./pages/login/login";
 import Users from "./pages/users/users";
+import AddUsers from "./pages/users/add-users/add-users";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
   {
     path: "/users",
     element: <Users />
+  },
+  {
+    path: "/addusers",
+    element: <AddUsers />
   }
 
 ]);

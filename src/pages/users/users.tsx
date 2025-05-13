@@ -145,6 +145,13 @@ export default function Users() {
       />
       <h1 className="text-xl font-bold mt-5">Usuários</h1>
       <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+          <a href="/addusers">
+            <Button className="bg-emerald-500 hover:bg-emerald-600 cursor-pointer">
+              Adicionar Usuário
+            </Button>
+          </a>
+        </div>
         {error && <p className="text-red-500">{error}</p>}
         <Table>
           <TableCaption>
