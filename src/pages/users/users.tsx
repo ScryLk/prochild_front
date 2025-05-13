@@ -31,6 +31,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 interface User {
   id: number;
   nome: string;
@@ -47,7 +56,11 @@ export default function Users() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editNome, setEditNome] = useState<string>("");
   const [editEmail, setEditEmail] = useState<string>("");
-  const [editRole, setEditRole] = useState<string>("user"); // sempre como string aqui
+  const [editRole, setEditRole] = useState<string>("user");
+  const [viewOpen, setViewOpen] = useState(false);
+  const [viewUser, setViewUser] = useState<User | null>(null);
+  const [deleteUser, setDeleteUser] = useState<User | null>(null);
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -143,7 +156,7 @@ export default function Users() {
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
+              <TableHead>Função</TableHead>
               <TableHead>Criado em</TableHead>
               <TableHead>Atualizado em</TableHead>
               <TableHead>Ações</TableHead>
@@ -171,9 +184,8 @@ export default function Users() {
                         <button
                           className="hover:bg-gray-300 rounded-md p-2 cursor-pointer"
                           onClick={() => {
-                            toast.info(
-                              "Visualizar usuário ainda não implementado."
-                            );
+                            setViewUser(user);
+                            setViewOpen(true);
                           }}
                         >
                           <Eye color="gray" />
@@ -194,7 +206,11 @@ export default function Users() {
                             setSelectedUser(user);
                             setEditNome(user.nome);
                             setEditEmail(user.email);
-                            setEditRole(user.role ? "admin" : "user"); // boolean → string
+                            setEditRole(
+                              user.role === true || user.role === "admin"
+                                ? "admin"
+                                : "user"
+                            ); // força para string esperada no <select>
                             setEditOpen(true);
                           }}
                         >
@@ -208,24 +224,67 @@ export default function Users() {
                   </TooltipProvider>
 
                   <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
-                          onClick={() => {
-                            toast.warn(
-                              "Função de exclusão ainda não implementada."
-                            );
-                          }}
-                        >
-                          <Trash color="red" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Excluir</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button
+            className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
+            onClick={() => setDeleteUser(user)}
+          >
+            <Trash color="red" />
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+          </AlertDialogHeader>
+          <div className="text-sm">
+            Tem certeza que deseja excluir o usuário{" "}
+            <strong>{deleteUser?.nome}</strong>? Esta ação não pode ser desfeita.
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600 cursor-pointer text-white"
+              onClick={async () => {
+                if (!deleteUser) return;
+                try {
+                  const response = await fetch(
+                    `http://127.0.0.1:8000/users/delete/${deleteUser.id}/`,
+                    {
+                      method: "DELETE",
+                      credentials: "include",
+                      redirect: "follow",
+                    }
+                  );
+                  if (response.ok) {
+                    setUsers((prev) =>
+                      prev.filter((user) => user.id !== deleteUser.id)
+                    );
+                    toast.success("Usuário excluído com sucesso!");
+                  } else {
+                    toast.error("Erro ao excluir usuário.");
+                  }
+                } catch (error) {
+                  toast.error("Erro de conexão ao excluir.");
+                } finally {
+                  setDeleteUser(null);
+                }
+              }}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>Excluir</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
                 </TableCell>
               </TableRow>
             ))}
@@ -260,15 +319,28 @@ export default function Users() {
             </div>
             <div>
               <Label htmlFor="edit-role">Função</Label>
-              <select
-                id="edit-role"
+              <Select
                 value={editRole}
-                onChange={(e) => setEditRole(e.target.value)}
-                className="border rounded-md px-3 py-2 w-full"
+                onValueChange={(value) => setEditRole(value)}
               >
-                <option value="user">Usuário</option>
-                <option value="admin">Administrador</option>
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione a função" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    value="user"
+                    className="cursor-pointer hover:bg-muted hover:text-primary"
+                  >
+                    Usuário
+                  </SelectItem>
+                  <SelectItem
+                    value="admin"
+                    className="cursor-pointer hover:bg-muted hover:text-primary"
+                  >
+                    Administrador
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
@@ -285,6 +357,54 @@ export default function Users() {
               onClick={handleEditSave}
             >
               Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalhes do Usuário</DialogTitle>
+            <DialogDescription>
+              Essas informações são somente para visualização.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="view-nome">Nome</Label>
+              <Input id="view-nome" value={viewUser?.nome || ""} disabled />
+            </div>
+            <div>
+              <Label htmlFor="view-email">Email</Label>
+              <Input id="view-email" value={viewUser?.email || ""} disabled />
+            </div>
+            <div>
+              <Label htmlFor="view-role">Função</Label>
+              <Select
+                value={
+                  viewUser?.role === true || viewUser?.role === "admin"
+                    ? "admin"
+                    : "user"
+                }
+              >
+                <SelectTrigger className="w-full" disabled>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">Usuário</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-gray-500 cursor-pointer hover:bg-gray-600"
+              type="button"
+              onClick={() => setViewOpen(false)}
+            >
+              Fechar
             </Button>
           </DialogFooter>
         </DialogContent>
