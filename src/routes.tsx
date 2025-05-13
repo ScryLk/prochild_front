@@ -8,6 +8,7 @@ import AddSections from "@/pages/home/sections/add-sections/add-sections";
 import Categories from "@/pages/categories/categories";
 import AddCategories from "@/pages/categories/add-categories/add-categories";
 import Login from "./pages/login/login";
+import Users from "./pages/users/users";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />
   },
+  {
+    path: "/users",
+    element: <Users />
+  }
 
 ]);
 
