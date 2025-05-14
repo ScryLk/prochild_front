@@ -38,7 +38,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface User {
   id: number;
@@ -60,7 +69,6 @@ export default function Users() {
   const [viewOpen, setViewOpen] = useState(false);
   const [viewUser, setViewUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
-
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -90,9 +98,7 @@ export default function Users() {
       toast.error("Nome e email não podem estar vazios.");
       return;
     }
-
-    const roleBoolean = editRole === "admin"; // string → boolean
-
+  
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/users/edit/${selectedUser.id}`,
@@ -106,11 +112,11 @@ export default function Users() {
           body: JSON.stringify({
             nome: editNome,
             email: editEmail,
-            role: roleBoolean,
+            role: editRole, // envia como string ("admin" ou "user")
           }),
         }
       );
-
+  
       if (response.ok) {
         setUsers((prev) =>
           prev.map((user) =>
@@ -119,7 +125,7 @@ export default function Users() {
                   ...user,
                   nome: editNome,
                   email: editEmail,
-                  role: roleBoolean, // mantemos como boolean internamente
+                  role: editRole, // mantém como string
                 }
               : user
           )
@@ -145,7 +151,7 @@ export default function Users() {
       />
       <h1 className="text-xl font-bold mt-5">Usuários</h1>
       <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
+        <div className="flex justify-end">
           <a href="/addusers">
             <Button className="bg-emerald-500 hover:bg-emerald-600 cursor-pointer">
               Adicionar Usuário
@@ -231,67 +237,75 @@ export default function Users() {
                   </TooltipProvider>
 
                   <TooltipProvider>
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <button
-            className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
-            onClick={() => setDeleteUser(user)}
-          >
-            <Trash color="red" />
-          </button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-          </AlertDialogHeader>
-          <div className="text-sm">
-            Tem certeza que deseja excluir o usuário{" "}
-            <strong>{deleteUser?.nome}</strong>? Esta ação não pode ser desfeita.
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600 cursor-pointer text-white"
-              onClick={async () => {
-                if (!deleteUser) return;
-                try {
-                  const response = await fetch(
-                    `http://127.0.0.1:8000/users/delete/${deleteUser.id}/`,
-                    {
-                      method: "DELETE",
-                      credentials: "include",
-                      redirect: "follow",
-                    }
-                  );
-                  if (response.ok) {
-                    setUsers((prev) =>
-                      prev.filter((user) => user.id !== deleteUser.id)
-                    );
-                    toast.success("Usuário excluído com sucesso!");
-                  } else {
-                    toast.error("Erro ao excluir usuário.");
-                  }
-                } catch (error) {
-                  toast.error("Erro de conexão ao excluir.");
-                } finally {
-                  setDeleteUser(null);
-                }
-              }}
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </TooltipTrigger>
-    <TooltipContent>
-      <p>Excluir</p>
-    </TooltipContent>
-  </Tooltip>
-</TooltipProvider>
-
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button
+                              className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
+                              onClick={() => setDeleteUser(user)}
+                            >
+                              <Trash color="red" />
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Confirmar Exclusão
+                              </AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <div className="text-sm">
+                              Tem certeza que deseja excluir o usuário{" "}
+                              <strong>{deleteUser?.nome}</strong>? Esta ação não
+                              pode ser desfeita.
+                            </div>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="cursor-pointer">
+                                Cancelar
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-red-500 hover:bg-red-600 cursor-pointer text-white"
+                                onClick={async () => {
+                                  if (!deleteUser) return;
+                                  try {
+                                    const response = await fetch(
+                                      `http://127.0.0.1:8000/users/delete/${deleteUser.id}/`,
+                                      {
+                                        method: "DELETE",
+                                        credentials: "include",
+                                        redirect: "follow",
+                                      }
+                                    );
+                                    if (response.ok) {
+                                      setUsers((prev) =>
+                                        prev.filter(
+                                          (user) => user.id !== deleteUser.id
+                                        )
+                                      );
+                                      toast.success(
+                                        "Usuário excluído com sucesso!"
+                                      );
+                                    } else {
+                                      toast.error("Erro ao excluir usuário.");
+                                    }
+                                  } catch (error) {
+                                    toast.error("Erro de conexão ao excluir.");
+                                  } finally {
+                                    setDeleteUser(null);
+                                  }
+                                }}
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Excluir</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </TableCell>
               </TableRow>
             ))}
