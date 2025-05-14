@@ -19,71 +19,59 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Accept", "application/json");
-
-    // Adiciona o sessionid de forma xumbada
-    myHeaders.append(
-      "Cookie",
-      "sessionid=t0yd2l4j53gfwbszrvxmvi8qtkxxmxry; expires=Mon, 12 May 2025 12:02:38 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
-    );
-
-    const raw = JSON.stringify({
-      email: email,
-      password_hash: password,
-    });
-
-    const requestOptions: RequestInit = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow" as RequestRedirect,
-      credentials: "include", // Inclui cookies na requisição
-    };
-
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/users/login/",
-        requestOptions
-      );
+      const response = await fetch("http://localhost:8000/users/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include", // ESSENCIAL para armazenar o cookie da sessão
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Login bem-sucedido:", result);
+
         const userData = {
           id: result.id,
           name: result.name,
           email: result.email,
           role: result.role,
         };
+
         localStorage.setItem("user", JSON.stringify(userData));
         window.location.href = "/";
+      } else if (response.status === 401) {
+        setErrorMessage("Credenciais inválidas. Verifique seu email e senha.");
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.detail || "Erro ao fazer login.");
+        setErrorMessage(errorData.error || "Erro ao fazer login.");
       }
     } catch (error) {
       console.error("Erro:", error);
-      setErrorMessage("Erro ao conectar ao servidor.");
+      setErrorMessage("Erro de conexão com o servidor.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen w-screen">
-      <Card className="w-[350px]">
+    <div className="flex items-center justify-center h-screen w-screen bg-gray-50">
+      <Card className="w-[350px] shadow-lg border border-gray-200">
         <CardHeader>
-          <div className="items-center justify-center flex">
-            <img src="./logo-color-new.png" className="h-4/5" alt="" />
+          <div className="flex justify-center">
+            <img src="./logo-color-new.png" className="h-12" alt="Prochild Logo" />
           </div>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>
-            Acessar painel administrador Prochild.
+          <CardTitle className="text-center">Login</CardTitle>
+          <CardDescription className="text-center">
+            Acesse o painel administrativo da Prochild
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
-            <div className="grid w-full items-center gap-4">
+            <div className="grid gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -103,16 +91,16 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <a href="" className="underline text-sm">
+                <a href="#" className="underline text-sm text-gray-500 hover:text-gray-700">
                   Esqueci minha senha
                 </a>
               </div>
               {errorMessage && (
-                <p className="text-red-500 text-sm">{errorMessage}</p>
+                <p className="text-red-500 text-sm text-center">{errorMessage}</p>
               )}
             </div>
             <CardFooter className="flex justify-end mt-4">
-              <Button type="submit" className="cursor-pointer">
+              <Button type="submit" className="w-full cursor-pointer">
                 Acessar
               </Button>
             </CardFooter>

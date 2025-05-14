@@ -1,8 +1,23 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Certifique-se de que está usando react-router-dom
 import Layout from "@/components/layout/layout";
 import { ColumnChart } from "@/components/dash-charts/column-chart/column-chart";
 import { InterativeDash } from "@/components/dash-charts/interative-dash-chart/interative-dash-chart";
 
 export default function Home() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuthentication = () => {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        navigate("/login"); // Redireciona para a página de login
+      }
+    };
+
+    checkAuthentication();
+  }, [navigate]);
+
   const mostDownloadedData = [
     { month: "January", desktop: 186, mobile: 80 },
     { month: "February", desktop: 305, mobile: 200 },

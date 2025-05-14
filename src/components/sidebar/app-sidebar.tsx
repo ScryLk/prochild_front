@@ -73,26 +73,8 @@ export function AppSidebar() {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          const userId = user.id;
-  
-          const myHeaders = new Headers();
-          myHeaders.append("Accept", "application/json");
-  
-          const requestOptions: RequestInit = {
-            method: "GET",
-            headers: myHeaders,
-            redirect: "follow",
-          };
-  
-          const response = await fetch(`http://127.0.0.1:8000/users/${userId}/`, requestOptions);
-  
-          if (response.ok) {
-            const result = await response.json();
-            setUserName(result.name || "Usuário");
-          } else {
-            console.error("Erro ao buscar o nome do usuário:", response.status);
-            setUserName("Usuário");
-          }
+          const userNameFromSession = user.name; 
+          setUserName(userNameFromSession || "Usuário");
         } else {
           setUserName("Usuário");
         }
