@@ -3,7 +3,13 @@ import { Breadcrumb } from "@/components/app-breadcrumb/app-breadcrumb";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,7 +27,11 @@ export default function AddUsers() {
   const [role, setRole] = useState("user");
 
   const handleRegisterUser = async () => {
-    if (!nome || !email || !password || !role) {
+    console.log("Nome:", nome);
+    console.log("Email:", email);
+    console.log("Senha:", password);
+    console.log("Função:", role);
+    if (!nome.trim() || !email.trim() || !password.trim() || !role.trim()) {
       toast.error("Preencha todos os campos.");
       return;
     }
@@ -29,7 +39,7 @@ export default function AddUsers() {
     const payload = {
       nome,
       email,
-      password_hash: password,
+      password: password,
       role,
     };
 
@@ -103,8 +113,12 @@ export default function AddUsers() {
               <SelectValue placeholder="Selecione a função" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="user" className="cursor-pointer">Usuário</SelectItem>
-              <SelectItem value="admin" className="cursor-pointer">Administrador</SelectItem>
+              <SelectItem value="user" className="cursor-pointer">
+                Usuário
+              </SelectItem>
+              <SelectItem value="admin" className="cursor-pointer">
+                Administrador
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
