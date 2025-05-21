@@ -69,7 +69,7 @@ export default function Sections() {
         myHeaders.append("Cookie", document.cookie);
 
         const response = await fetch(
-          "https://prochild-back-proud-star-4651.fly.dev/sections/sections/",
+          "http://127.0.0.1:8000/sections/sections/",
           {
             method: "GET",
             headers: myHeaders,
@@ -95,7 +95,7 @@ export default function Sections() {
   async function handleDelete(sectionId: number) {
     try {
       const response = await fetch(
-        `https://prochild-back-proud-star-4651.fly.dev/sections/delete/${sectionId}`,
+        `http://127.0.0.1:8000/sections/delete/${sectionId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -114,40 +114,40 @@ export default function Sections() {
     }
   }
 
-    async function handleEditSave() {
-      if (!selectedSection || editNome.trim() === "") {
-        toast.error("O nome não pode estar vazio.");
-        return;
-      }
-      try {
-        const response = await fetch(
-          `https://prochild-back-proud-star-4651.fly.dev/sections/edit/${selectedSection.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Cookie: document.cookie,
-            },
-            body: JSON.stringify({ nome: editNome }),
-            credentials: "include",
-          }
-        );
-        if (response.ok) {
-          setSections((prev) =>
-            prev.map((s) =>
-              s.id === selectedSection.id ? { ...s, nome: editNome } : s
-            )
-          );
-          toast.success("Seção atualizada com sucesso!");
-          setEditOpen(false);
-          setSelectedSection(null);
-        } else {
-          toast.error("Erro ao atualizar a seção.");
-        }
-      } catch (error) {
-        toast.error("Erro ao conectar ao servidor.");
-      }
+  async function handleEditSave() {
+    if (!selectedSection || editNome.trim() === "") {
+      toast.error("O nome não pode estar vazio.");
+      return;
     }
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/sections/edit/${selectedSection.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: document.cookie,
+          },
+          body: JSON.stringify({ nome: editNome }),
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        setSections((prev) =>
+          prev.map((s) =>
+            s.id === selectedSection.id ? { ...s, nome: editNome } : s
+          )
+        );
+        toast.success("Seção atualizada com sucesso!");
+        setEditOpen(false);
+        setSelectedSection(null);
+      } else {
+        toast.error("Erro ao atualizar a seção.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar ao servidor.");
+    }
+  }
 
   return (
     <Layout>
@@ -204,38 +204,38 @@ export default function Sections() {
                       </Tooltip>
                     </TooltipProvider>
                     <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <AlertDialog>
+                      <AlertDialog>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
                             <AlertDialogTrigger asChild>
                               <button className="hover:bg-red-300 rounded-md p-2 cursor-pointer">
                                 <Trash color="red" />
                               </button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Confirmar Exclusão
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja excluir a seção "
-                                  {section.nome}"?
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="bg-red-500 hover:bg-red-600 text-white"
-                                  onClick={() => handleDelete(section.id)}
-                                >
-                                  Excluir
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </TooltipTrigger>
-                        <TooltipContent>Excluir</TooltipContent>
-                      </Tooltip>
+                          </TooltipTrigger>
+                          <TooltipContent>Excluir</TooltipContent>
+                        </Tooltip>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Confirmar Exclusão
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir a seção "
+                              {section.nome}"?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-500 hover:bg-red-600 text-white"
+                              onClick={() => handleDelete(section.id)}
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TooltipProvider>
                   </div>
                 </TableCell>
