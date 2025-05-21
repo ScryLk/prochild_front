@@ -99,7 +99,7 @@ export default function AddCategories() {
 
         if (response.ok) {
           const result = await response.json();
-          setSections(result.Sucesso || []); // Supondo que os dados estão na propriedade "Sucesso"
+          setSections(result.Sucesso || []); 
         } else {
           console.error("Erro ao carregar as seções.");
         }
@@ -114,9 +114,9 @@ export default function AddCategories() {
   const handleSaveIcon = () => {
     const selected = icons.find((icon) => icon.id === selectedIcon);
     if (selected) {
-      setSavedIcon(capitalizeFirstLetter(selected.id)); // Salva o id com a primeira letra maiúscula
-      setSavedIconComponent(selected.icon); // Salva o componente do ícone
-      setIsDialogOpen(false); // Fecha o Dialog
+      setSavedIcon(capitalizeFirstLetter(selected.id)); 
+      setSavedIconComponent(selected.icon); 
+      setIsDialogOpen(false);
     }
   };
 
@@ -134,10 +134,10 @@ export default function AddCategories() {
   
     try {
       const raw = JSON.stringify({
-        secao_id: selectedSection, // ID da seção
-        nome: categoryName, // Nome da categoria
-        cor: categoryColor, // Cor selecionada no formato hexadecimal
-        icone_id: savedIcon, // ID do ícone selecionado
+        secao_id: selectedSection, 
+        nome: categoryName, 
+        cor: categoryColor, 
+        icone_id: savedIcon, 
       });
   
       const requestOptions: RequestInit = {
@@ -146,7 +146,7 @@ export default function AddCategories() {
           "Content-Type": "application/json",
         },
         body: raw,
-        credentials: "include", // Inclui cookies na requisição
+        credentials: "include", 
       };
   
       const response = await fetch(
@@ -239,7 +239,7 @@ export default function AddCategories() {
             <DialogFooter>
               <Button
                 type="button"
-                onClick={() => setIsColorPickerDialogOpen(false)} // Fecha o Dialog ao salvar
+                onClick={() => setIsColorPickerDialogOpen(false)} 
                 className="cursor-pointer"
               >
                 Salvar Cor
@@ -318,7 +318,7 @@ export default function AddCategories() {
           </a>
         </div>
       </div>
-      <ToastContainer /> {/* Adicionado para exibir os toasts */}
+      <ToastContainer /> 
     </Layout>
   );
 }

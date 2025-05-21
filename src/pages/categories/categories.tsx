@@ -254,7 +254,7 @@ export default function Categories() {
             secao_id: editSection,
             nome: editNome,
             icone_id: editIcon,
-            cor: editColor, // Inclui a cor selecionada
+            cor: editColor, 
           }),
         }
       );
@@ -268,7 +268,7 @@ export default function Categories() {
                   nome: editNome,
                   secao_id: editSection,
                   icone_id: editIcon,
-                  cor: editColor, // Atualiza a cor na lista
+                  cor: editColor, 
                 }
               : category
           )
@@ -333,7 +333,7 @@ export default function Categories() {
                   <div
                     className="w-6 h-6 rounded-full border"
                     style={{ backgroundColor: category.cor }}
-                    title={category.cor} // Exibe o código hexadecimal ao passar o mouse
+                    title={category.cor} 
                   ></div>
                 </TableCell>
                 <TableCell>{category.secao_nome}</TableCell>
@@ -460,7 +460,7 @@ export default function Categories() {
               ></div>
               <Button
                 variant="outline"
-                onClick={() => setEditColorOpen(true)} // Abre o modal de edição de cor
+                onClick={() => setEditColorOpen(true)} 
               >
                 Escolher Cor
               </Button>
@@ -485,13 +485,13 @@ export default function Categories() {
                 <DialogFooter>
                   <Button
                     className="bg-gray-500 hover:bg-gray-600"
-                    onClick={() => setEditColorOpen(false)} // Fecha o modal sem salvar
+                    onClick={() => setEditColorOpen(false)} 
                   >
                     Cancelar
                   </Button>
                   <Button
                     className="bg-emerald-500 hover:bg-emerald-600"
-                    onClick={() => setEditColorOpen(false)} // Fecha o modal e mantém a cor selecionada
+                    onClick={() => setEditColorOpen(false)} 
                   >
                     Salvar Cor
                   </Button>

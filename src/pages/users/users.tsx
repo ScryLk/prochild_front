@@ -73,11 +73,14 @@ export default function Users() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("https://prochild-back-proud-star-4651.fly.dev/users/", {
-          method: "GET",
-          credentials: "include",
-          redirect: "follow",
-        });
+        const response = await fetch(
+          "https://prochild-back-proud-star-4651.fly.dev/users/",
+          {
+            method: "GET",
+            credentials: "include",
+            redirect: "follow",
+          }
+        );
 
         if (response.ok) {
           const result = await response.json();
@@ -98,7 +101,7 @@ export default function Users() {
       toast.error("Nome e email não podem estar vazios.");
       return;
     }
-  
+
     try {
       const response = await fetch(
         `https://prochild-back-proud-star-4651.fly.dev/users/edit/${selectedUser.id}`,
@@ -112,11 +115,11 @@ export default function Users() {
           body: JSON.stringify({
             nome: editNome,
             email: editEmail,
-            role: editRole, // envia como string ("admin" ou "user")
+            role: editRole,
           }),
         }
       );
-  
+
       if (response.ok) {
         setUsers((prev) =>
           prev.map((user) =>
@@ -125,7 +128,7 @@ export default function Users() {
                   ...user,
                   nome: editNome,
                   email: editEmail,
-                  role: editRole, // mantém como string
+                  role: editRole,
                 }
               : user
           )
@@ -220,9 +223,7 @@ export default function Users() {
                             setEditNome(user.nome);
                             setEditEmail(user.email);
                             setEditRole(
-                              user.role === true || user.role === "admin"
-                                ? "admin"
-                                : "user"
+                              user.role === "admin" ? "admin" : "user"
                             ); // força para string esperada no <select>
                             setEditOpen(true);
                           }}
@@ -235,76 +236,80 @@ export default function Users() {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <button
-                              className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
-                              onClick={() => setDeleteUser(user)}
-                            >
-                              <Trash color="red" />
-                            </button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Confirmar Exclusão
-                              </AlertDialogTitle>
-                            </AlertDialogHeader>
-                            <div className="text-sm">
-                              Tem certeza que deseja excluir o usuário{" "}
-                              <strong>{deleteUser?.nome}</strong>? Esta ação não
-                              pode ser desfeita.
-                            </div>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="cursor-pointer">
-                                Cancelar
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-500 hover:bg-red-600 cursor-pointer text-white"
-                                onClick={async () => {
-                                  if (!deleteUser) return;
-                                  try {
-                                    const response = await fetch(
-                                      `https://prochild-back-proud-star-4651.fly.dev/users/delete/${deleteUser.id}/`,
-                                      {
-                                        method: "DELETE",
-                                        credentials: "include",
-                                        redirect: "follow",
-                                      }
-                                    );
-                                    if (response.ok) {
-                                      setUsers((prev) =>
-                                        prev.filter(
-                                          (user) => user.id !== deleteUser.id
-                                        )
-                                      );
-                                      toast.success(
-                                        "Usuário excluído com sucesso!"
-                                      );
-                                    } else {
-                                      toast.error("Erro ao excluir usuário.");
-                                    }
-                                  } catch (error) {
-                                    toast.error("Erro de conexão ao excluir.");
-                                  } finally {
-                                    setDeleteUser(null);
-                                  }
-                                }}
-                              >
-                                Excluir
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <button
+                          className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
+                          onClick={() => setDeleteUser(user)}
+                        >
+                          <Trash color="red" />
+                        </button>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Excluir</p>
                       </TooltipContent>
                     </Tooltip>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button
+                          style={{ display: "none" }}
+                          aria-hidden="true"
+                          tabIndex={-1}
+                        />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Confirmar Exclusão
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <div className="text-sm">
+                          Tem certeza que deseja excluir o usuário{" "}
+                          <strong>{deleteUser?.nome}</strong>? Esta ação não
+                          pode ser desfeita.
+                        </div>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="cursor-pointer">
+                            Cancelar
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-600 cursor-pointer text-white"
+                            onClick={async () => {
+                              if (!deleteUser) return;
+                              try {
+                                const response = await fetch(
+                                  `https://prochild-back-proud-star-4651.fly.dev/users/delete/${deleteUser.id}/`,
+                                  {
+                                    method: "DELETE",
+                                    credentials: "include",
+                                    redirect: "follow",
+                                  }
+                                );
+                                if (response.ok) {
+                                  setUsers((prev) =>
+                                    prev.filter(
+                                      (user) => user.id !== deleteUser.id
+                                    )
+                                  );
+                                  toast.success(
+                                    "Usuário excluído com sucesso!"
+                                  );
+                                } else {
+                                  toast.error("Erro ao excluir usuário.");
+                                }
+                              } catch (error) {
+                                toast.error("Erro de conexão ao excluir.");
+                              } finally {
+                                setDeleteUser(null);
+                              }
+                            }}
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TooltipProvider>
                 </TableCell>
               </TableRow>
@@ -402,13 +407,7 @@ export default function Users() {
             </div>
             <div>
               <Label htmlFor="view-role">Função</Label>
-              <Select
-                value={
-                  viewUser?.role === true || viewUser?.role === "admin"
-                    ? "admin"
-                    : "user"
-                }
-              >
+              <Select value={viewUser?.role === "admin" ? "admin" : "user"}>
                 <SelectTrigger className="w-full" disabled>
                   <SelectValue />
                 </SelectTrigger>
