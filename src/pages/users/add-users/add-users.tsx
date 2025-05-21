@@ -25,6 +25,7 @@ export default function AddUsers() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
+  const [loading, setLoading] = useState(false);
 
   const handleRegisterUser = async () => {
     console.log("Nome:", nome);
@@ -35,6 +36,8 @@ export default function AddUsers() {
       toast.error("Preencha todos os campos.");
       return;
     }
+
+    setLoading(true); 
 
     const payload = {
       nome,
@@ -65,6 +68,8 @@ export default function AddUsers() {
     } catch (error) {
       toast.error("Erro de conexão com o servidor.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -127,11 +132,12 @@ export default function AddUsers() {
           <Button
             className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
             onClick={handleRegisterUser}
+            disabled={loading}
           >
-            Salvar
+            {loading ? "Salvando..." : "Salvar"}
           </Button>
           <a href="/users">
-            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
+            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer" disabled={loading}>
               Cancelar
             </Button>
           </a>
