@@ -254,7 +254,7 @@ export default function Categories() {
             secao_id: editSection,
             nome: editNome,
             icone_id: editIcon,
-            cor: editColor, 
+            cor: editColor,
           }),
         }
       );
@@ -268,7 +268,7 @@ export default function Categories() {
                   nome: editNome,
                   secao_id: editSection,
                   icone_id: editIcon,
-                  cor: editColor, 
+                  cor: editColor,
                 }
               : category
           )
@@ -333,7 +333,7 @@ export default function Categories() {
                   <div
                     className="w-6 h-6 rounded-full border"
                     style={{ backgroundColor: category.cor }}
-                    title={category.cor} 
+                    title={category.cor}
                   ></div>
                 </TableCell>
                 <TableCell>{category.secao_nome}</TableCell>
@@ -458,14 +458,11 @@ export default function Categories() {
                 className="w-6 h-6 rounded-full border"
                 style={{ backgroundColor: editColor }}
               ></div>
-              <Button
-                variant="outline"
-                onClick={() => setEditColorOpen(true)} 
-              >
+              <Button variant="outline" onClick={() => setEditColorOpen(true)}>
                 Escolher Cor
               </Button>
             </div>
-            
+
             <Dialog open={editColorOpen} onOpenChange={setEditColorOpen}>
               <DialogContent>
                 <DialogHeader>
@@ -485,13 +482,13 @@ export default function Categories() {
                 <DialogFooter>
                   <Button
                     className="bg-gray-500 hover:bg-gray-600"
-                    onClick={() => setEditColorOpen(false)} 
+                    onClick={() => setEditColorOpen(false)}
                   >
                     Cancelar
                   </Button>
                   <Button
                     className="bg-emerald-500 hover:bg-emerald-600"
-                    onClick={() => setEditColorOpen(false)} 
+                    onClick={() => setEditColorOpen(false)}
                   >
                     Salvar Cor
                   </Button>
