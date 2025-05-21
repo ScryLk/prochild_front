@@ -72,7 +72,7 @@ export default function AddTraining() {
     formData.append("arquivo_caminho", selectedFile); 
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/trainings/", {
+      const response = await fetch("https://prochild-back-proud-star-4651.fly.dev/trainings/", {
         method: "POST",
         body: formData,
       });
@@ -93,7 +93,7 @@ export default function AddTraining() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/categories/categories",
+          "https://prochild-back-proud-star-4651.fly.dev/categories/categories",
           {
             method: "GET",
             credentials: "include",

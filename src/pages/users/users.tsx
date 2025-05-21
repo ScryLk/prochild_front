@@ -73,7 +73,7 @@ export default function Users() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/users/", {
+        const response = await fetch("https://prochild-back-proud-star-4651.fly.dev/users/", {
           method: "GET",
           credentials: "include",
           redirect: "follow",
@@ -101,7 +101,7 @@ export default function Users() {
   
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/users/edit/${selectedUser.id}`,
+        `https://prochild-back-proud-star-4651.fly.dev/users/edit/${selectedUser.id}`,
         {
           method: "PUT",
           headers: {
@@ -269,7 +269,7 @@ export default function Users() {
                                   if (!deleteUser) return;
                                   try {
                                     const response = await fetch(
-                                      `http://127.0.0.1:8000/users/delete/${deleteUser.id}/`,
+                                      `https://prochild-back-proud-star-4651.fly.dev/users/delete/${deleteUser.id}/`,
                                       {
                                         method: "DELETE",
                                         credentials: "include",

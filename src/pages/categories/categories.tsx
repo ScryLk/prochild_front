@@ -144,7 +144,7 @@ export default function Categories() {
     const fetchSections = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/sections/sections/",
+          "https://prochild-back-proud-star-4651.fly.dev/sections/sections/",
           {
             method: "GET",
             credentials: "include",
@@ -168,7 +168,7 @@ export default function Categories() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/categories/categories/",
+          "https://prochild-back-proud-star-4651.fly.dev/categories/categories/",
           {
             method: "GET",
             credentials: "include",
@@ -191,7 +191,7 @@ export default function Categories() {
   const handleDelete = async (categoryId: number) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/categories/delete/${categoryId}`,
+        `https://prochild-back-proud-star-4651.fly.dev/categories/delete/${categoryId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -213,7 +213,7 @@ export default function Categories() {
   const handleListTraining = async (categoryId: number) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/trainings/trainings/categorie/${categoryId}`,
+        `https://prochild-back-proud-star-4651.fly.dev/trainings/trainings/categorie/${categoryId}`,
         {
           method: "GET",
           credentials: "include",
@@ -245,7 +245,7 @@ export default function Categories() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/categories/edit/${selectedCategory.id}`,
+        `https://prochild-back-proud-star-4651.fly.dev/categories/edit/${selectedCategory.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
