@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { Home, Search, ListOrdered, LayoutGrid, Book } from "lucide-react";
+import { Home, Search, ListOrdered, LayoutGrid, Book, User } from "lucide-react";
 
 const items = [
   {
@@ -27,6 +27,11 @@ const items = [
     url: "/trainings",
     icon: Book,
   },
+  {
+    title: "Usuários",
+    url: "/users",
+    icon: User,
+  }
 ];
 
 export function MobileSidebar() {

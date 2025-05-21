@@ -75,9 +75,8 @@ export default function Trainings() {
   const [selectedTraining, setSelectedTraining] = useState<Training | null>(
     null
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false); 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
 
   useEffect(() => {
     const fetchTrainings = async () => {
@@ -117,7 +116,7 @@ export default function Trainings() {
 
         if (response.ok) {
           const result = await response.json();
-          setCategories(result.success || []); 
+          setCategories(result.success || []);
           console.log("Categorias carregadas:", result.success);
         } else {
           console.error("Erro ao carregar as categorias.");
@@ -136,25 +135,25 @@ export default function Trainings() {
         `https://prochild-back-proud-star-4651.fly.dev/trainings/delete/${trainingId}`,
         {
           method: "DELETE",
-          credentials: "include", 
+          credentials: "include",
         }
       );
       if (response.ok) {
         setTrainings((prev) =>
           prev.filter((training) => training.id !== trainingId)
         );
-        toast.success("Treinamento deletado com sucesso!"); 
+        toast.success("Treinamento deletado com sucesso!");
       } else {
-        toast.error("Erro ao excluir o treinamento."); 
+        toast.error("Erro ao excluir o treinamento.");
       }
     } catch (error) {
-      toast.error("Erro ao conectar ao servidor."); 
+      toast.error("Erro ao conectar ao servidor.");
     }
   };
 
   const handleEdit = async () => {
     if (!selectedTraining) return;
-  
+
     try {
       const response = await fetch(
         `https://prochild-back-proud-star-4651.fly.dev/trainings/edit/${selectedTraining.id}`,
@@ -174,7 +173,7 @@ export default function Trainings() {
           }),
         }
       );
-  
+
       if (response.ok) {
         toast.success("Treinamento atualizado com sucesso!");
         setTrainings((prev) =>
@@ -230,7 +229,7 @@ export default function Trainings() {
                   <TableCell className="font-medium">
                     {training.categoria_nome}
                   </TableCell>
-                  
+
                   <TableCell>
                     {new Date(training.created_at).toLocaleString()}
                   </TableCell>
@@ -277,9 +276,9 @@ export default function Trainings() {
                         </Tooltip>
                       </TooltipProvider>
                       <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <AlertDialog>
+                        <AlertDialog>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
                               <AlertDialogTrigger asChild>
                                 <button
                                   className="hover:bg-red-300 rounded-md p-2 cursor-pointer"
@@ -288,41 +287,40 @@ export default function Trainings() {
                                   <Trash color="red" />
                                 </button>
                               </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Confirmar Exclusão
-                                  </AlertDialogTitle>
-                                </AlertDialogHeader>
-                                <p>
-                                  Tem certeza de que deseja excluir o
-                                  treinamento{" "}
-                                  <strong>{selectedTraining?.titulo}</strong>?
-                                  Essa ação não pode ser desfeita.
-                                </p>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel className="cursor-pointer">
-                                    Cancelar
-                                  </AlertDialogCancel>
-                                  <AlertDialogAction
-                                    className="bg-red-500 cursor-pointer hover:bg-red-600"
-                                    onClick={() => {
-                                      if (selectedTraining) {
-                                        handleDelete(selectedTraining.id);
-                                        setSelectedTraining(null);
-                                      }
-                                    }}
-                                  >
-                                    Excluir
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Excluir</p>
-                          </TooltipContent>
-                        </Tooltip>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Excluir</p>
+                            </TooltipContent>
+                          </Tooltip>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Confirmar Exclusão
+                              </AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <p>
+                              Tem certeza de que deseja excluir o treinamento{" "}
+                              <strong>{selectedTraining?.titulo}</strong>? Essa
+                              ação não pode ser desfeita.
+                            </p>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="cursor-pointer">
+                                Cancelar
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-red-500 cursor-pointer hover:bg-red-600"
+                                onClick={() => {
+                                  if (selectedTraining) {
+                                    handleDelete(selectedTraining.id);
+                                    setSelectedTraining(null);
+                                  }
+                                }}
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TooltipProvider>
                     </div>
                   </TableCell>
@@ -480,7 +478,7 @@ export default function Trainings() {
                   </a>
                   <a
                     href={selectedTraining.arquivo_caminho}
-                    download={selectedTraining.arquivo_nome} 
+                    download={selectedTraining.arquivo_nome}
                     className="text-blue-500 hover:text-blue-700"
                   >
                     <Download />
