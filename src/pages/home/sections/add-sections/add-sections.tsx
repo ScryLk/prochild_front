@@ -14,12 +14,16 @@ export default function AddSections() {
   ];
 
   const [section, setSection] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   async function handleAddSection() {
     if (!section.trim()) {
       toast.error("O nome da seção não pode estar vazio."); 
       return;
     }
+
+    setLoading(true);
 
     try {
       const raw = JSON.stringify({
@@ -48,6 +52,8 @@ export default function AddSections() {
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
       toast.error("Erro ao conectar ao servidor."); 
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -68,11 +74,12 @@ export default function AddSections() {
           <Button
             className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
             onClick={handleAddSection}
+            disabled={loading}
           >
-            Salvar
+            {loading ? "Salvando..." : "Salvar"}
           </Button>
           <a href="/sections">
-            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
+            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer" disabled={loading}>
               Cancelar
             </Button>
           </a>

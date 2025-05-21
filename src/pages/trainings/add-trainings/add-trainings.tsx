@@ -42,6 +42,8 @@ export default function AddTraining() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileSize, setFileSize] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
 
   interface Categories {
     id: number;
@@ -62,6 +64,9 @@ export default function AddTraining() {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
+      
+    setLoading(true);
+
 
     const formData = new FormData();
     formData.append("categoria_id", selectedCategoryId);
@@ -86,6 +91,8 @@ export default function AddTraining() {
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
       alert("Erro ao conectar ao servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -226,7 +233,7 @@ export default function AddTraining() {
             className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
             onClick={handleSaveTraining}
           >
-            Salvar
+            {loading ? "Salvando..." : "Salvar"}
           </Button>
           <a href="/">
             <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">

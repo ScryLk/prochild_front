@@ -53,13 +53,13 @@ export default function AddCategories() {
   const [sections, setSections] = useState<Section[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [savedIcon, setSavedIcon] = useState<string | null>(null);
-  const [savedIconComponent, setSavedIconComponent] =
-    useState<JSX.Element | null>(null);
+  const [savedIconComponent, setSavedIconComponent] = useState<JSX.Element | null>(null);
   const [categoryName, setCategoryName] = useState<string>("");
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [categoryColor, setCategoryColor] = useState<string>("#ffffff");
   const [isColorPickerDialogOpen, setIsColorPickerDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -129,6 +129,8 @@ export default function AddCategories() {
       alert("Preencha todos os campos antes de salvar.");
       return;
     }
+
+    setLoading(true);
   
     try {
       const raw = JSON.stringify({
@@ -163,6 +165,8 @@ export default function AddCategories() {
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
       toast.error("Erro ao conectar ao servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -303,11 +307,12 @@ export default function AddCategories() {
             type="button"
             onClick={handleAddCategory}
             className="bg-emerald-500 w-28 hover:bg-emerald-700 mt-5 cursor-pointer"
+            disabled={loading}
           >
-            Salvar
+            {loading ? "Salvando..." : "Salvar"}
           </Button>
           <a href="/categories">
-            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer">
+            <Button className="bg-gray-500 w-28 hover:bg-gray-700 mt-5 cursor-pointer" disabled={loading}>
               Cancelar
             </Button>
           </a>
