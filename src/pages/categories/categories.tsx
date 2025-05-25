@@ -27,6 +27,7 @@ import {
   Thermometer,
   Brain,
   Eye,
+  Beaker,
 } from "lucide-react";
 import {
   Tooltip,
@@ -86,6 +87,7 @@ const icons = [
   { id: "Thermometer", icon: <Thermometer /> },
   { id: "Brain", icon: <Brain /> },
   { id: "Eye", icon: <Eye /> },
+  { id: "Beaker", icon: <Beaker /> }
 ];
 
 export default function Categories() {

@@ -161,7 +161,7 @@ export default function AddTraining() {
         <textarea
           id="training-description"
           placeholder="Descrição do treinamento"
-          className="w-3/5 border p-2 rounded"
+          className="w-3/5 border p-2 overflow-auto rounded"
           value={trainingDescription}
           onChange={(e) => setTrainingDescription(e.target.value)}
         />

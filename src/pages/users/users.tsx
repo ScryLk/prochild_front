@@ -224,7 +224,7 @@ export default function Users() {
                             setEditEmail(user.email);
                             setEditRole(
                               user.role === "admin" ? "admin" : "user"
-                            ); // força para string esperada no <select>
+                            ); 
                             setEditOpen(true);
                           }}
                         >

@@ -15,9 +15,12 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false); 
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); 
 
     try {
       const response = await fetch("https://prochild-back-proud-star-4651.fly.dev/users/login/", {
@@ -26,7 +29,7 @@ export default function Login() {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        credentials: "include", // ESSENCIAL para armazenar o cookie da sessão
+        credentials: "include", 
         body: JSON.stringify({
           email,
           password,
@@ -54,6 +57,8 @@ export default function Login() {
     } catch (error) {
       console.error("Erro:", error);
       setErrorMessage("Erro de conexão com o servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,8 +105,8 @@ export default function Login() {
               )}
             </div>
             <CardFooter className="flex justify-end mt-4">
-              <Button type="submit" className="w-full cursor-pointer">
-                Acessar
+              <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
+                  {loading ? "Entrando..." : "Entrar"}
               </Button>
             </CardFooter>
           </form>

@@ -21,7 +21,7 @@ export default function SearchBar() {
           <Input
             id="search"
             placeholder="Pesquisar"
-            className="pl-10" // Adiciona espaço para o ícone
+            className="pl-10" 
           />
         </div>
       </div>

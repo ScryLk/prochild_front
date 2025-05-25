@@ -38,6 +38,20 @@ import {
   Thermometer,
   Brain,
   Eye,
+  Carrot,
+  Biohazard,
+  Droplet,
+  Flame,
+  ShieldAlert,
+  BriefcaseMedical,
+  Activity,
+  Droplets,
+  SquareActivity,
+  Ear,
+  Laugh,
+  Speech,
+  PersonStanding,
+  Beaker,
 } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -78,12 +92,28 @@ export default function AddCategories() {
     { id: "accessibility", icon: <Accessibility />, label: "Acessibilidade" },
     { id: "stethoscope", icon: <Stethoscope />, label: "Estetoscópio" },
     { id: "heartPulse", icon: <HeartPulse />, label: "Batimento Cardíaco" },
-    { id: "bandage", icon: <Bandage />, label: "Curativo" },
     { id: "syringe", icon: <Syringe />, label: "Seringa" },
     { id: "pill", icon: <Pill />, label: "Pílula" },
-    { id: "thermometer", icon: <Thermometer />, label: "Termômetro" },
     { id: "brain", icon: <Brain />, label: "Cérebro" },
     { id: "eye", icon: <Eye />, label: "Olho" },
+    { id: "carrot", icon: <Carrot />, label: "Cenoura" },
+    { id: "Biohazard", icon: <Biohazard />, label: "Vírus" },
+    { id: "droplet", icon: <Droplet />, label: "Gota" },
+    { id: "flame", icon: <Flame />, label: "Chama" },
+    { id: "bandage", icon: <Bandage />, label: "Bandagem" },
+    { id: "ShieldAlert", icon: <ShieldAlert />, label: "Escudo" },
+    { id: "briefcase-medical", icon: <BriefcaseMedical />, label: "Mala Médica" },
+    { id: "activity", icon: <Activity />, label: "Atividade" },
+    { id: "droplets", icon: <Droplets />, label: "Gotas" },
+    { id: "thermometer", icon: <Thermometer />, label: "Termômetro" },
+    { id: "SquareActivity", icon: <SquareActivity />, label: "Atividade Quadrada" },
+    { id: "ear", icon: <Ear />, label: "Orelha" },
+    { id: "Laugh", icon: <Laugh />, label: "Riso" },
+    { id: "speech", icon: <Speech />, label: "Fala" },
+    { id: "PersonStanding", icon: <PersonStanding />, label: "Pessoa em Pé" },
+    { id: "Beaker", icon: <Beaker />, label: "Copo Medidor" },
+
+
   ];
 
   useEffect(() => {

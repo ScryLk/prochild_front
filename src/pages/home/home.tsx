@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Certifique-se de que está usando react-router-dom
+import { useNavigate } from "react-router-dom"; 
 import Layout from "@/components/layout/layout";
 import { ColumnChart } from "@/components/dash-charts/column-chart/column-chart";
 import { InterativeDash } from "@/components/dash-charts/interative-dash-chart/interative-dash-chart";
@@ -11,7 +11,7 @@ export default function Home() {
     const checkAuthentication = () => {
       const storedUser = localStorage.getItem("user");
       if (!storedUser) {
-        navigate("/login"); // Redireciona para a página de login
+        navigate("/login"); 
       }
     };
 
@@ -39,12 +39,10 @@ export default function Home() {
   return (
     <Layout>
       <div className="flex flex-col mt-0 h-auto">
-        {/* Gráficos superiores */}
         <div className="grid grid-cols-2 gap-4 flex-1 p-4">
           <ColumnChart title="Treinamentos mais baixados" data={mostDownloadedData} />
           <ColumnChart title="Treinamentos menos baixados" data={leastDownloadedData} />
         </div>
-        {/* Gráfico interativo ocupando o restante da tela */}
         <div className="flex-1 p-4">
           <InterativeDash />
         </div>
