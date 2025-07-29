@@ -120,7 +120,7 @@ export default function AddCategories() {
     const fetchSections = async () => {
       try {
         const response = await fetch(
-          "https://prochild-back-proud-star-4651.fly.dev/sections/sections/",
+          "http://127.0.0.1:8000/sections/sections/",
           {
             method: "GET",
             credentials: "include",
@@ -180,7 +180,7 @@ export default function AddCategories() {
       };
   
       const response = await fetch(
-        "https://prochild-back-proud-star-4651.fly.dev/categories/",
+        "http://127.0.0.1:8000/categories/",
         requestOptions
       );
   

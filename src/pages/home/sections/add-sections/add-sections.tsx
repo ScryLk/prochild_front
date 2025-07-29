@@ -36,7 +36,7 @@ export default function AddSections() {
         body: raw,
       };
 
-      const response = await fetch("https://prochild-back-proud-star-4651.fly.dev/sections/", requestOptions);
+      const response = await fetch("http://127.0.0.1:8000/sections/", requestOptions);
 
       if (response.ok) {
         const result = await response.json();

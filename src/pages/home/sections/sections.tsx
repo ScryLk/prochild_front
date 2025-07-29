@@ -69,7 +69,7 @@ export default function Sections() {
         myHeaders.append("Cookie", document.cookie);
 
         const response = await fetch(
-          "https://prochild-back-proud-star-4651.fly.dev/sections/sections/",
+          "http://127.0.0.1:8000/sections/sections/",
           {
             method: "GET",
             headers: myHeaders,
@@ -95,7 +95,7 @@ export default function Sections() {
   async function handleDelete(sectionId: number) {
     try {
       const response = await fetch(
-        `https://prochild-back-proud-star-4651.fly.dev/sections/delete/${sectionId}`,
+        `http://127.0.0.1:8000/sections/delete/${sectionId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -121,7 +121,7 @@ export default function Sections() {
     }
     try {
       const response = await fetch(
-        `https://prochild-back-proud-star-4651.fly.dev/sections/edit/${selectedSection.id}`,
+        `http://127.0.0.1:8000/sections/edit/${selectedSection.id}`,
         {
           method: "PUT",
           headers: {

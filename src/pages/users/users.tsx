@@ -74,7 +74,7 @@ export default function Users() {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          "https://prochild-back-proud-star-4651.fly.dev/users/",
+          "http://127.0.0.1:8000/users/",
           {
             method: "GET",
             credentials: "include",
@@ -104,7 +104,7 @@ export default function Users() {
 
     try {
       const response = await fetch(
-        `https://prochild-back-proud-star-4651.fly.dev/users/edit/${selectedUser.id}`,
+        `http://127.0.0.1:8000/users/edit/${selectedUser.id}`,
         {
           method: "PUT",
           headers: {
@@ -279,7 +279,7 @@ export default function Users() {
                               if (!deleteUser) return;
                               try {
                                 const response = await fetch(
-                                  `https://prochild-back-proud-star-4651.fly.dev/users/delete/${deleteUser.id}/`,
+                                  `http://127.0.0.1:8000/users/delete/${deleteUser.id}/`,
                                   {
                                     method: "DELETE",
                                     credentials: "include",

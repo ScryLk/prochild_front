@@ -47,7 +47,7 @@ export default function AddUsers() {
     };
 
     try {
-      const response = await fetch("https://prochild-back-proud-star-4651.fly.dev/users/register/", {
+      const response = await fetch("http://127.0.0.1:8000/users/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
